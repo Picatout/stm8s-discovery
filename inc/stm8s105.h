@@ -92,7 +92,7 @@ typedef struct{
 #define PIN6 (1<<6)
 #define PIN7 (1<<7)
 
-#define GPIO sfr(0x5000)
+#define GPIO 0x5000
 
 /* GPIO */
 #define PA_ODR sfrp(0x5000)
@@ -156,10 +156,10 @@ typedef struct{
 #define INPUT_PU_DI (1)
 #define INPUT_PU_EI (3)
 //output, bit 0 -> type, bit 1 -> speed
-#define OUTPUT_OD_SLOW (0)
-#define OUTPUT_OD_FAST (2)
-#define OUTPUT_PP_SLOW (1)
-#define OUTPUT_PP_FAST (3)
+#define OUTPUT_OD_SLOW (0+4)
+#define OUTPUT_OD_FAST (2+4)
+#define OUTPUT_PP_SLOW (1+4)
+#define OUTPUT_PP_FAST (3+4)
 
 
 /* Flash */
@@ -192,6 +192,19 @@ typedef struct{
 #define CLK_PCKENR2 sfrp(0x50CA)
 #define CLK_HSITRIMR sfrp(0x50CC)
 #define CLK_SWIMCCR sfrp(0x50CD)
+
+// Peripherals clock gating
+// CLK_PCKENR1 
+#define CLK_PCKENR1_TIM1 (1<<7)
+#define CLK_PCKENR1_TIM3 (1<<6)
+#define CLK_PCKENR1_TIM2 (1<<5)
+#define CLK_PCKENR1_TIM4 (1<<4)
+#define CLK_PCKENR1_UART2 (1<<3)
+#define CLK_PCKENR1_SPI (1<<1)
+#define CLK_PCKENR1_I2C (1<<0)
+//CLK_PCKENR2
+#define CLK_PCKENR2_ADC (1<<3)
+#define CLK_PCKENR2_AWU (1<<2)
 
 /* Clock bitmasks */
 #define CLK_ICKR_REGAH (1 << 5)
@@ -851,6 +864,10 @@ typedef struct{
     nop\
     nop\
  __endasm;}
+
+// special function register bits clear/set
+#define _clrbit(reg, mask) reg &= ~mask
+#define _setbit(reg, mask) reg |= mask
 
 
 #endif

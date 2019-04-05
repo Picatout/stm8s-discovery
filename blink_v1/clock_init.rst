@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Thu Apr  4 23:14:22 2019
+                                      4 ; This file was generated Fri Apr  5 12:37:21 2019
                                       5 ;--------------------------------------------------------
                                       6 	.module clock_init
                                       7 	.optsdcc -mstm8
@@ -43,24 +43,24 @@
                                      43 ;	 function clock_init
                                      44 ;	-----------------------------------------
       0080A0                         45 _clock_init:
-                                     46 ;	../hal/clock_init.c: 10: CLK_SWCR|=CLK_SWCR_SWEN;
+                                     46 ;	../hal/clock_init.c: 10: _setbit(CLK_SWCR,CLK_SWCR_SWEN);
       0080A0 AE 50 C5         [ 2]   47 	ldw	x, #0x50c5
       0080A3 F6               [ 1]   48 	ld	a, (x)
       0080A4 AA 02            [ 1]   49 	or	a, #0x02
       0080A6 F7               [ 1]   50 	ld	(x), a
-                                     51 ;	../hal/clock_init.c: 11: CLK_SWR=CLK_SWR_HSE;
+                                     51 ;	../hal/clock_init.c: 12: CLK_SWR=CLK_SWR_HSE;
       0080A7 35 B4 50 C4      [ 1]   52 	mov	0x50c4+0, #0xb4
-                                     53 ;	../hal/clock_init.c: 14: if (wait){
+                                     53 ;	../hal/clock_init.c: 15: if (wait){
       0080AB 1E 03            [ 2]   54 	ldw	x, (0x03, sp)
-      0080AD 27 07            [ 1]   55 	jreq	00106$
-                                     56 ;	../hal/clock_init.c: 15: while (CLK_SWCR&CLK_SWCR_SWBSY);
+      0080AD 27 08            [ 1]   55 	jreq	00106$
+                                     56 ;	../hal/clock_init.c: 16: while (CLK_CMSR!=CLK_SWR_HSE);
       0080AF                         57 00101$:
-      0080AF AE 50 C5         [ 2]   58 	ldw	x, #0x50c5
+      0080AF AE 50 C3         [ 2]   58 	ldw	x, #0x50c3
       0080B2 F6               [ 1]   59 	ld	a, (x)
-      0080B3 44               [ 1]   60 	srl	a
-      0080B4 25 F9            [ 1]   61 	jrc	00101$
-      0080B6                         62 00106$:
-      0080B6 81               [ 4]   63 	ret
+      0080B3 A1 B4            [ 1]   60 	cp	a, #0xb4
+      0080B5 26 F8            [ 1]   61 	jrne	00101$
+      0080B7                         62 00106$:
+      0080B7 81               [ 4]   63 	ret
                                      64 	.area CODE
                                      65 	.area INITIALIZER
                                      66 	.area CABS (ABS)

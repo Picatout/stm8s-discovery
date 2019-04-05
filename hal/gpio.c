@@ -5,48 +5,34 @@
 
 #include "../inc/stm8s105.h"
 
-void set_pin_output(int port,int pin, int mode){
-	gpio_t* gpio=(gpio_t*)GPIO;
-	gpio[port].ddr|=pin;
+void set_pin_mode(int port, int pin, int mode){
+	volatile gpio_t* gpio=(volatile gpio_t*)(GPIO+port*sizeof(gpio_t));
+	if (mode&4){
+		_setbit(gpio->ddr,pin);
+	}else{
+		_clrbit(gpio->ddr,pin);
+	}
 	switch(mode){
+		case INPUT_FLOAT_DI:
 		case OUTPUT_OD_SLOW:
-			gpio[port].cr1&=~pin;
-			gpio[port].cr2&=~pin;
+			_clrbit(gpio->cr1,pin);
+			_clrbit(gpio->cr2,pin);
 			break;
+		case INPUT_FLOAT_EI:
 		case OUTPUT_OD_FAST:
-			gpio[port].cr1&=~pin;
-			gpio[port].cr2|=pin;
+			_clrbit(gpio->cr1,pin);
+			_setbit(gpio->cr2,pin);
 			break;
+		case INPUT_PU_DI:
 		case OUTPUT_PP_SLOW:
-			gpio[port].cr1|=pin;
-			gpio[port].cr2&=~pin;
+			_setbit(gpio->cr1,pin);
+			_clrbit(gpio->cr2,pin);
 			break;
+		case INPUT_PU_EI:
 		case OUTPUT_PP_FAST:
-			gpio[port].cr1|=pin;
-			gpio[port].cr2|=pin;
+			_setbit(gpio->cr1,pin);
+			_setbit(gpio->cr2,pin);
 			break;
 	}
 }
 
-void set_pin_input(int port,int pin,int mode){
-	gpio_t* gpio=(gpio_t*)GPIO;
-	gpio[port].cr1&=~pin;
-	switch(mode){
-		case INPUT_FLOAT_DI:
-			gpio[port].cr1&=~pin;
-			gpio[port].cr2&=~pin;
-			break;
-		case INPUT_FLOAT_EI:
-			gpio[port].cr1&=~pin;
-			gpio[port].cr2|=pin;
-			break;
-		case INPUT_PU_DI:
-			gpio[port].cr1|=pin;
-			gpio[port].cr2&=~pin;
-			break;
-		case INPUT_PU_EI:
-			gpio[port].cr1|=pin;
-			gpio[port].cr2|=pin;
-			break;
-	}
-}

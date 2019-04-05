@@ -23,13 +23,13 @@ Area                                    Addr        Size        Decimal Bytes (A
      00000003  l_GSFINAL                       
      0000001A  l_GSINIT                        
      00000083  l_HOME                          
-     000001E6  l_CODE                          
+     00000147  l_CODE                          
      00008000  s_HOME                          
      00008083  s_GSINIT                        
      0000809D  s_GSFINAL                       
      000080A0  s_CODE                          
-     00008286  s_INITIALIZER                   
-     00008286  s_SSEG                          
+     000081E7  s_INITIALIZER                   
+     000081E7  s_SSEG                          
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
@@ -63,22 +63,22 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CODE                                000080A0    000001E6 =         486. bytes (REL,CON)
+CODE                                000080A0    00000147 =         327. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
      000080A0  _clock_init                        clock_init
-     000080B7  _set_pin_output                    gpio
-     0000816E  _set_pin_input                     gpio
-     0000821D  _delay                             blink
-     00008236  _main                              blink
-     00008265  __mulint                           
+     000080B8  _set_pin_mode                      gpio
+     0000817C  _delay                             blink
+     00008195  _main                              blink
+     000081C6  __mulint                           
+
 ASxxxx Linker V03.00 + NoICE + sdld,  page 6.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-SSEG                                00008286    00000001 =           1. bytes (REL,CON)
+SSEG                                000081E7    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------

@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Thu Apr  4 23:14:22 2019
+                                      4 ; This file was generated Fri Apr  5 12:37:21 2019
                                       5 ;--------------------------------------------------------
                                       6 	.module blink
                                       7 	.optsdcc -mstm8
@@ -11,7 +11,7 @@
                                      11 ;--------------------------------------------------------
                                      12 	.globl _main
                                      13 	.globl _delay
-                                     14 	.globl _set_pin_output
+                                     14 	.globl _set_pin_mode
                                      15 	.globl _clock_init
                                      16 ;--------------------------------------------------------
                                      17 ; ram data
@@ -109,12 +109,12 @@
                                     109 ; code
                                     110 ;--------------------------------------------------------
                                     111 	.area CODE
-                                    112 ;	blink.c: 12: void delay(uint32_t delay){
+                                    112 ;	blink.c: 11: void delay(uint32_t delay){
                                     113 ;	-----------------------------------------
                                     114 ;	 function delay
                                     115 ;	-----------------------------------------
       000000                        116 _delay:
-                                    117 ;	blink.c: 13: while (delay) delay--;
+                                    117 ;	blink.c: 12: while (delay) delay--;
       000000 16 05            [ 2]  118 	ldw	y, (0x05, sp)
       000002 1E 03            [ 2]  119 	ldw	x, (0x03, sp)
       000004                        120 00101$:
@@ -132,41 +132,41 @@
       000016 20 EC            [ 2]  132 	jra	00101$
       000018                        133 00104$:
       000018 81               [ 4]  134 	ret
-                                    135 ;	blink.c: 16: void main(){
+                                    135 ;	blink.c: 15: void main(){
                                     136 ;	-----------------------------------------
                                     137 ;	 function main
                                     138 ;	-----------------------------------------
       000019                        139 _main:
-                                    140 ;	blink.c: 17: clock_init(1);
+                                    140 ;	blink.c: 16: clock_init(1);
       000019 4B 01            [ 1]  141 	push	#0x01
       00001B 4B 00            [ 1]  142 	push	#0x00
       00001D CDr00r00         [ 4]  143 	call	_clock_init
       000020 5B 02            [ 2]  144 	addw	sp, #2
-                                    145 ;	blink.c: 18: set_pin_output(PD,PIN0,OUTPUT_OD_SLOW);
-      000022 5F               [ 1]  146 	clrw	x
-      000023 89               [ 2]  147 	pushw	x
-      000024 4B 01            [ 1]  148 	push	#0x01
-      000026 4B 00            [ 1]  149 	push	#0x00
-      000028 4B 03            [ 1]  150 	push	#0x03
-      00002A 4B 00            [ 1]  151 	push	#0x00
-      00002C CDr00r00         [ 4]  152 	call	_set_pin_output
-      00002F 5B 06            [ 2]  153 	addw	sp, #6
-                                    154 ;	blink.c: 19: while (1){
-      000031                        155 00102$:
-                                    156 ;	blink.c: 20: PD_ODR^=PIN0;
-      000031 AE 50 0F         [ 2]  157 	ldw	x, #0x500f
-      000034 F6               [ 1]  158 	ld	a, (x)
-      000035 A8 01            [ 1]  159 	xor	a, #0x01
-      000037 F7               [ 1]  160 	ld	(x), a
-                                    161 ;	blink.c: 21: delay(512500);
-      000038 4B F4            [ 1]  162 	push	#0xf4
-      00003A 4B D1            [ 1]  163 	push	#0xd1
-      00003C 4B 07            [ 1]  164 	push	#0x07
-      00003E 4B 00            [ 1]  165 	push	#0x00
-      000040 CDr00r00         [ 4]  166 	call	_delay
-      000043 5B 04            [ 2]  167 	addw	sp, #4
-      000045 20 EA            [ 2]  168 	jra	00102$
-      000047 81               [ 4]  169 	ret
+                                    145 ;	blink.c: 17: set_pin_mode(PD,PIN0,OUTPUT_OD_SLOW);
+      000022 4B 04            [ 1]  146 	push	#0x04
+      000024 4B 00            [ 1]  147 	push	#0x00
+      000026 4B 01            [ 1]  148 	push	#0x01
+      000028 4B 00            [ 1]  149 	push	#0x00
+      00002A 4B 03            [ 1]  150 	push	#0x03
+      00002C 4B 00            [ 1]  151 	push	#0x00
+      00002E CDr00r00         [ 4]  152 	call	_set_pin_mode
+      000031 5B 06            [ 2]  153 	addw	sp, #6
+                                    154 ;	blink.c: 18: while (1){
+      000033                        155 00102$:
+                                    156 ;	blink.c: 19: PD_ODR^=PIN0;
+      000033 AE 50 0F         [ 2]  157 	ldw	x, #0x500f
+      000036 F6               [ 1]  158 	ld	a, (x)
+      000037 A8 01            [ 1]  159 	xor	a, #0x01
+      000039 F7               [ 1]  160 	ld	(x), a
+                                    161 ;	blink.c: 20: delay(225000);
+      00003A 4B E8            [ 1]  162 	push	#0xe8
+      00003C 4B 6E            [ 1]  163 	push	#0x6e
+      00003E 4B 03            [ 1]  164 	push	#0x03
+      000040 4B 00            [ 1]  165 	push	#0x00
+      000042 CDr00r00         [ 4]  166 	call	_delay
+      000045 5B 04            [ 2]  167 	addw	sp, #4
+      000047 20 EA            [ 2]  168 	jra	00102$
+      000049 81               [ 4]  169 	ret
                                     170 	.area CODE
                                     171 	.area INITIALIZER
                                     172 	.area CABS (ABS)

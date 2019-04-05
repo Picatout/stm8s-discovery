@@ -1,0 +1,11 @@
+*.rel
+*.sym
+*.lst
+*.map
+*.lk
+*.cdb
+*.rst
+*.asm
+STM8S_128kEval_Flash
+STM8S_128kEval_microSD
+

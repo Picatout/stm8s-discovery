@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-; This file was generated Thu Apr  4 23:14:22 2019
+; This file was generated Fri Apr  5 12:37:21 2019
 ;--------------------------------------------------------
 	.module gpio
 	.optsdcc -mstm8
@@ -9,8 +9,7 @@
 ;--------------------------------------------------------
 ; Public variables in this module
 ;--------------------------------------------------------
-	.globl _set_pin_input
-	.globl _set_pin_output
+	.globl _set_pin_mode
 ;--------------------------------------------------------
 ; ram data
 ;--------------------------------------------------------
@@ -39,13 +38,13 @@
 ; code
 ;--------------------------------------------------------
 	.area CODE
-;	../hal/gpio.c: 8: void set_pin_output(int port,int pin, int mode){
+;	../hal/gpio.c: 8: void set_pin_mode(int port, int pin, int mode){
 ;	-----------------------------------------
-;	 function set_pin_output
+;	 function set_pin_mode
 ;	-----------------------------------------
-_set_pin_output:
+_set_pin_mode:
 	sub	sp, #9
-;	../hal/gpio.c: 10: gpio[port].ddr|=pin;
+;	../hal/gpio.c: 9: volatile gpio_t* gpio=(volatile gpio_t*)(GPIO+port*sizeof(gpio_t));
 	ldw	x, (0x0c, sp)
 	pushw	x
 	push	#0x05
@@ -54,260 +53,150 @@ _set_pin_output:
 	addw	sp, #4
 	addw	x, #0x5000
 	ldw	(0x05, sp), x
+;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
 	ldw	x, (0x05, sp)
 	incw	x
 	incw	x
+;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
+	ld	a, (0x0f, sp)
+	cpl	a
+	ld	(0x09, sp), a
+;	../hal/gpio.c: 10: if (mode&4){
+	ld	a, (0x11, sp)
+	bcp	a, #0x04
+	jreq	00102$
+;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
 	ld	a, (x)
-	clr	(0x03, sp)
+	clr	(0x07, sp)
 	or	a, (0x0f, sp)
 	ld	yh, a
-	ld	a, (0x03, sp)
+	ld	a, (0x07, sp)
 	or	a, (0x0e, sp)
 	ld	a, yh
 	ld	(x), a
-;	../hal/gpio.c: 13: gpio[port].cr1&=~pin;
-	ldw	x, (0x05, sp)
-	addw	x, #0x0003
-	ldw	(0x01, sp), x
-	ld	a, (0x0f, sp)
-;	../hal/gpio.c: 14: gpio[port].cr2&=~pin;
+	jra	00103$
+00102$:
+;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
+	ld	a, (x)
+	and	a, (0x09, sp)
+	ld	(x), a
+00103$:
+;	../hal/gpio.c: 15: switch(mode){
+	tnz	(0x10, sp)
+	jrpl	00128$
+	jp	00113$
+00128$:
+	ldw	x, (0x10, sp)
+	cpw	x, #0x0007
+	jrsle	00129$
+	jp	00113$
+00129$:
+;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
+	ldw	y, (0x05, sp)
+	addw	y, #0x0003
+;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
 	ldw	x, (0x05, sp)
 	addw	x, #0x0004
-	ldw	(0x08, sp), x
-;	../hal/gpio.c: 13: gpio[port].cr1&=~pin;
-	cpl	a
-	ld	(0x07, sp), a
-;	../hal/gpio.c: 11: switch(mode){
+	ldw	(0x03, sp), x
+;	../hal/gpio.c: 15: switch(mode){
 	ldw	x, (0x10, sp)
-	cpw	x, #0x0000
-	jreq	00101$
-	ldw	x, (0x10, sp)
-	cpw	x, #0x0001
-	jreq	00103$
-	ldw	x, (0x10, sp)
-	cpw	x, #0x0002
-	jreq	00102$
-	ldw	x, (0x10, sp)
-	cpw	x, #0x0003
-	jreq	00104$
-	jra	00106$
-;	../hal/gpio.c: 12: case OUTPUT_OD_SLOW:
-00101$:
-;	../hal/gpio.c: 13: gpio[port].cr1&=~pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	and	a, (0x07, sp)
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 14: gpio[port].cr2&=~pin;
-	ldw	x, (0x08, sp)
-	ld	a, (x)
-	and	a, (0x07, sp)
-	ldw	x, (0x08, sp)
-	ld	(x), a
-;	../hal/gpio.c: 15: break;
-	jra	00106$
-;	../hal/gpio.c: 16: case OUTPUT_OD_FAST:
-00102$:
-;	../hal/gpio.c: 17: gpio[port].cr1&=~pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	and	a, (0x07, sp)
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 18: gpio[port].cr2|=pin;
-	ldw	x, (0x08, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0e, sp)
-	rlwa	x
-	or	a, (0x0f, sp)
-	ld	xh, a
-	ldw	x, (0x08, sp)
-	ld	(x), a
-;	../hal/gpio.c: 19: break;
-	jra	00106$
-;	../hal/gpio.c: 20: case OUTPUT_PP_SLOW:
-00103$:
-;	../hal/gpio.c: 21: gpio[port].cr1|=pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0e, sp)
-	rlwa	x
-	or	a, (0x0f, sp)
-	ld	xh, a
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 22: gpio[port].cr2&=~pin;
-	ldw	x, (0x08, sp)
-	ld	a, (x)
-	and	a, (0x07, sp)
-	ldw	x, (0x08, sp)
-	ld	(x), a
-;	../hal/gpio.c: 23: break;
-	jra	00106$
-;	../hal/gpio.c: 24: case OUTPUT_PP_FAST:
+	sllw	x
+	ldw	x, (#00130$, x)
+	jp	(x)
+00130$:
+	.dw	#00104$
+	.dw	#00108$
+	.dw	#00106$
+	.dw	#00110$
+	.dw	#00105$
+	.dw	#00109$
+	.dw	#00107$
+	.dw	#00111$
+;	../hal/gpio.c: 16: case INPUT_FLOAT_DI:
 00104$:
-;	../hal/gpio.c: 25: gpio[port].cr1|=pin;
-	ldw	x, (0x01, sp)
+;	../hal/gpio.c: 17: case OUTPUT_OD_SLOW:
+00105$:
+;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
+	ld	a, (y)
+	and	a, (0x09, sp)
+	ld	(y), a
+;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
+	ldw	x, (0x03, sp)
 	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0e, sp)
-	rlwa	x
-	or	a, (0x0f, sp)
-	ld	xh, a
-	ldw	x, (0x01, sp)
+	and	a, (0x09, sp)
+	ldw	x, (0x03, sp)
 	ld	(x), a
-;	../hal/gpio.c: 26: gpio[port].cr2|=pin;
-	ldw	x, (0x08, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0e, sp)
-	rlwa	x
-	or	a, (0x0f, sp)
-	ld	xh, a
-	ldw	x, (0x08, sp)
-	ld	(x), a
-;	../hal/gpio.c: 28: }
+;	../hal/gpio.c: 20: break;
+	jra	00113$
+;	../hal/gpio.c: 21: case INPUT_FLOAT_EI:
 00106$:
+;	../hal/gpio.c: 22: case OUTPUT_OD_FAST:
+00107$:
+;	../hal/gpio.c: 23: _clrbit(gpio->cr1,pin);
+	ld	a, (y)
+	and	a, (0x09, sp)
+	ld	(y), a
+;	../hal/gpio.c: 24: _setbit(gpio->cr2,pin);
+	ldw	x, (0x03, sp)
+	ld	a, (x)
+	ld	xh, a
+	clr	a
+	or	a, (0x0e, sp)
+	rlwa	x
+	or	a, (0x0f, sp)
+	ld	xh, a
+	ldw	x, (0x03, sp)
+	ld	(x), a
+;	../hal/gpio.c: 25: break;
+	jra	00113$
+;	../hal/gpio.c: 26: case INPUT_PU_DI:
+00108$:
+;	../hal/gpio.c: 27: case OUTPUT_PP_SLOW:
+00109$:
+;	../hal/gpio.c: 28: _setbit(gpio->cr1,pin);
+	ld	a, (y)
+	ld	xh, a
+	clr	a
+	or	a, (0x0e, sp)
+	rlwa	x
+	or	a, (0x0f, sp)
+	ld	xh, a
+	ld	(y), a
+;	../hal/gpio.c: 29: _clrbit(gpio->cr2,pin);
+	ldw	x, (0x03, sp)
+	ld	a, (x)
+	and	a, (0x09, sp)
+	ldw	x, (0x03, sp)
+	ld	(x), a
+;	../hal/gpio.c: 30: break;
+	jra	00113$
+;	../hal/gpio.c: 31: case INPUT_PU_EI:
+00110$:
+;	../hal/gpio.c: 32: case OUTPUT_PP_FAST:
+00111$:
+;	../hal/gpio.c: 33: _setbit(gpio->cr1,pin);
+	ld	a, (y)
+	ld	xh, a
+	clr	a
+	or	a, (0x0e, sp)
+	rlwa	x
+	or	a, (0x0f, sp)
+	ld	xh, a
+	ld	(y), a
+;	../hal/gpio.c: 34: _setbit(gpio->cr2,pin);
+	ldw	x, (0x03, sp)
+	ld	a, (x)
+	ld	xh, a
+	clr	a
+	or	a, (0x0e, sp)
+	rlwa	x
+	or	a, (0x0f, sp)
+	ld	xh, a
+	ldw	x, (0x03, sp)
+	ld	(x), a
+;	../hal/gpio.c: 36: }
+00113$:
 	addw	sp, #9
-	ret
-;	../hal/gpio.c: 31: void set_pin_input(int port,int pin,int mode){
-;	-----------------------------------------
-;	 function set_pin_input
-;	-----------------------------------------
-_set_pin_input:
-	sub	sp, #7
-;	../hal/gpio.c: 33: gpio[port].cr1&=~pin;
-	ldw	x, (0x0a, sp)
-	pushw	x
-	push	#0x05
-	push	#0x00
-	call	__mulint
-	addw	sp, #4
-	addw	x, #0x5000
-	ldw	(0x04, sp), x
-	ldw	x, (0x04, sp)
-	addw	x, #0x0003
-	ldw	(0x01, sp), x
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	ld	xh, a
-	ld	a, (0x0d, sp)
-	cpl	a
-	ld	(0x03, sp), a
-	ld	a, xh
-	and	a, (0x03, sp)
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 37: gpio[port].cr2&=~pin;
-	ldw	x, (0x04, sp)
-	addw	x, #0x0004
-	ldw	(0x06, sp), x
-;	../hal/gpio.c: 34: switch(mode){
-	ldw	x, (0x0e, sp)
-	cpw	x, #0x0000
-	jreq	00101$
-	ldw	x, (0x0e, sp)
-	cpw	x, #0x0001
-	jreq	00103$
-	ldw	x, (0x0e, sp)
-	cpw	x, #0x0002
-	jreq	00102$
-	ldw	x, (0x0e, sp)
-	cpw	x, #0x0003
-	jreq	00104$
-	jra	00106$
-;	../hal/gpio.c: 35: case INPUT_FLOAT_DI:
-00101$:
-;	../hal/gpio.c: 36: gpio[port].cr1&=~pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	and	a, (0x03, sp)
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 37: gpio[port].cr2&=~pin;
-	ldw	x, (0x06, sp)
-	ld	a, (x)
-	and	a, (0x03, sp)
-	ldw	x, (0x06, sp)
-	ld	(x), a
-;	../hal/gpio.c: 38: break;
-	jra	00106$
-;	../hal/gpio.c: 39: case INPUT_FLOAT_EI:
-00102$:
-;	../hal/gpio.c: 40: gpio[port].cr1&=~pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	and	a, (0x03, sp)
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 41: gpio[port].cr2|=pin;
-	ldw	x, (0x06, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0c, sp)
-	rlwa	x
-	or	a, (0x0d, sp)
-	ld	xh, a
-	ldw	x, (0x06, sp)
-	ld	(x), a
-;	../hal/gpio.c: 42: break;
-	jra	00106$
-;	../hal/gpio.c: 43: case INPUT_PU_DI:
-00103$:
-;	../hal/gpio.c: 44: gpio[port].cr1|=pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0c, sp)
-	rlwa	x
-	or	a, (0x0d, sp)
-	ld	xh, a
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 45: gpio[port].cr2&=~pin;
-	ldw	x, (0x06, sp)
-	ld	a, (x)
-	and	a, (0x03, sp)
-	ldw	x, (0x06, sp)
-	ld	(x), a
-;	../hal/gpio.c: 46: break;
-	jra	00106$
-;	../hal/gpio.c: 47: case INPUT_PU_EI:
-00104$:
-;	../hal/gpio.c: 48: gpio[port].cr1|=pin;
-	ldw	x, (0x01, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0c, sp)
-	rlwa	x
-	or	a, (0x0d, sp)
-	ld	xh, a
-	ldw	x, (0x01, sp)
-	ld	(x), a
-;	../hal/gpio.c: 49: gpio[port].cr2|=pin;
-	ldw	x, (0x06, sp)
-	ld	a, (x)
-	ld	xh, a
-	clr	a
-	or	a, (0x0c, sp)
-	rlwa	x
-	or	a, (0x0d, sp)
-	ld	xh, a
-	ldw	x, (0x06, sp)
-	ld	(x), a
-;	../hal/gpio.c: 51: }
-00106$:
-	addw	sp, #7
 	ret
 	.area CODE
 	.area INITIALIZER

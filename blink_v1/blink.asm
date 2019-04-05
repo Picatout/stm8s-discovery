@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-; This file was generated Thu Apr  4 23:14:22 2019
+; This file was generated Fri Apr  5 12:37:21 2019
 ;--------------------------------------------------------
 	.module blink
 	.optsdcc -mstm8
@@ -11,7 +11,7 @@
 ;--------------------------------------------------------
 	.globl _main
 	.globl _delay
-	.globl _set_pin_output
+	.globl _set_pin_mode
 	.globl _clock_init
 ;--------------------------------------------------------
 ; ram data
@@ -109,12 +109,12 @@ __sdcc_program_startup:
 ; code
 ;--------------------------------------------------------
 	.area CODE
-;	blink.c: 12: void delay(uint32_t delay){
+;	blink.c: 11: void delay(uint32_t delay){
 ;	-----------------------------------------
 ;	 function delay
 ;	-----------------------------------------
 _delay:
-;	blink.c: 13: while (delay) delay--;
+;	blink.c: 12: while (delay) delay--;
 	ldw	y, (0x05, sp)
 	ldw	x, (0x03, sp)
 00101$:
@@ -132,36 +132,36 @@ _delay:
 	jra	00101$
 00104$:
 	ret
-;	blink.c: 16: void main(){
+;	blink.c: 15: void main(){
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-;	blink.c: 17: clock_init(1);
+;	blink.c: 16: clock_init(1);
 	push	#0x01
 	push	#0x00
 	call	_clock_init
 	addw	sp, #2
-;	blink.c: 18: set_pin_output(PD,PIN0,OUTPUT_OD_SLOW);
-	clrw	x
-	pushw	x
+;	blink.c: 17: set_pin_mode(PD,PIN0,OUTPUT_OD_SLOW);
+	push	#0x04
+	push	#0x00
 	push	#0x01
 	push	#0x00
 	push	#0x03
 	push	#0x00
-	call	_set_pin_output
+	call	_set_pin_mode
 	addw	sp, #6
-;	blink.c: 19: while (1){
+;	blink.c: 18: while (1){
 00102$:
-;	blink.c: 20: PD_ODR^=PIN0;
+;	blink.c: 19: PD_ODR^=PIN0;
 	ldw	x, #0x500f
 	ld	a, (x)
 	xor	a, #0x01
 	ld	(x), a
-;	blink.c: 21: delay(512500);
-	push	#0xf4
-	push	#0xd1
-	push	#0x07
+;	blink.c: 20: delay(225000);
+	push	#0xe8
+	push	#0x6e
+	push	#0x03
 	push	#0x00
 	call	_delay
 	addw	sp, #4
