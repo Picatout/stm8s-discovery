@@ -53,7 +53,8 @@ $(TARGET): $(OBJECTS) $(INCLUDES)
 	@echo "linking files"
 	@echo "***************"
 	$(SDCC) -mstm8 -lstm8 $(LDFLAGS) -o $@ $(OBJECTS) 
-
+	@ls -gG $(TARGET)
+	
 clean:
 	@echo
 	@echo "***************"

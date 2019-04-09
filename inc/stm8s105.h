@@ -646,11 +646,29 @@ typedef struct{
 #define TIM3_CCR2H sfrp(0x532F)
 #define TIM3_CCR2L sfrp(0x5330)
 
+// TIM3_CR1  fields
+#define TIM3_CR1_CEN (1<<0)
+#define TIM3_CR1_UDIS (1<<1)
+#define TIM3_CR1_URS (1<<2)
+#define TIM3_CR1_OPM (1<<3)
+#define TIM3_CR1_ARPE (1<<7)
+//TIM3_CCR2  fields
+#define TIM3_CCMR2_CC2S_POS (0)
+#define TIM3_CCMR2_OC2PE_POS (3)
+#define TIM3_CCMR2_OC2M_POS (4)  
+//TIM3_CCER1 fields
+#define TIM3_CCER1_CC1E (1<<0)
+#define TIM3_CCER1_CC1P (1<<1)
+#define TIM3_CCER1_CC2E (1<<4)
+#define TIM3_CCER1_CC2P (1<<5)
+//TIM3_CCER2 fields
+#define TIM3_CCER2_CC3E (1<<0)
+#define TIM3_CCER2_CC3P (1<<1)
 
 /* Timer 4 */
 #define TIM4_CR1 sfrp(0x5340)
 #define TIM4_IER sfrp(0x5341)
-#define TIM4_SR sfrp(0x53442)
+#define TIM4_SR sfrp(0x5342)
 #define TIM4_EGR sfrp(0x5343)
 #define TIM4_CNTR sfrp(0x5344)
 #define TIM4_PSCR sfrp(0x5345)
@@ -868,6 +886,6 @@ typedef struct{
 // special function register bits clear/set
 #define _clrbit(reg, mask) reg &= ~mask
 #define _setbit(reg, mask) reg |= mask
-
+#define _togglebit(reg,mask) reg ^= mask
 
 #endif
