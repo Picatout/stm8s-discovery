@@ -8,6 +8,8 @@
 #define STM8S105_H
 #include <stdint.h>
 
+#define Fmaster 16000000UL
+
 // special fonction register type
 #define sfr (volatile uint8_t*)
 // pointer
@@ -353,19 +355,34 @@ typedef struct{
 #define I2C_READ 1
 #define I2C_WRITE 0
 
+typedef enum {
+// baudrate constant for brr_value table access
+B2400=0,
+B4800,
+B9600,
+B19200,
+B38400,
+B57600,
+B115200,
+B230400,
+B460800,
+B921600,
+}baud_t;
+
 /* UART2 */
-#define UART2_SR sfrp(0x5240)
-#define UART2_DR sfrp(0x5241)
+#define UART2_SR   sfrp(0x5240)
+#define UART2_DR   sfrp(0x5241)
 #define UART2_BRR1 sfrp(0x5242)
 #define UART2_BRR2 sfrp(0x5243)
-#define UART2_CR1 sfrp(0x5244)
-#define UART2_CR2 sfrp(0x5245)
-#define UART2_CR3 sfrp(0x5246)
-#define UART2_CR4 sfrp(0x5247)
-#define UART2_CR5 sfrp(0x5248)
-#define USRT2_CR6 sfrp(0x4249)
-#define UART2_GTR sfrp(0x524A)
+#define UART2_CR1  sfrp(0x5244)
+#define UART2_CR2  sfrp(0x5245)
+#define UART2_CR3  sfrp(0x5246)
+#define UART2_CR4  sfrp(0x5247)
+#define UART2_CR5  sfrp(0x5248)
+#define UART2_CR6  sfrp(0x4249)
+#define UART2_GTR  sfrp(0x524A)
 #define UART2_PSCR sfrp(0x524B)
+
 
 
 /* UART Status Register bits */

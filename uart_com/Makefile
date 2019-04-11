@@ -1,8 +1,8 @@
 ###########################################################
 # makefile for blink_v1
-# adapted from https://github.com/erno-szabados/sdcc-stm8s
+# adapted from https://github.uart_com/erno-szabados/sdcc-stm8s
 ###########################################################
-TARGET=adpcm.ihx
+TARGET=uart_com.ihx
 
 BOARD=stm8s105c6
 PROGRAMMER=stlink
@@ -16,7 +16,7 @@ HAL=../hal/
 INC=../inc/
 INCLUDES=$(INC)stm8s105.h $(INC)discovery.h
 BUILD=build/
-OBJECTS=$(BUILD)clock_init.rel $(BUILD)gpio.rel $(BUILD)adpcm.rel $(BUILD)timer.rel $(BUILD)itc.rel
+OBJECTS=$(BUILD)clock_init.rel $(BUILD)gpio.rel $(BUILD)uart_com.rel $(BUILD)timer.rel $(BUILD)itc.rel $(BUILD)uart.rel
 SYMBOLS=$(OBJECTS:.rel=.sym)
 ASMS=$(OBJECTS:.rel=.asm)
 LISTS=$(OBJECTS:.rel=.lst)
@@ -36,16 +36,17 @@ flash: $(TARGET)
 	@echo "***************"
 	$(FLASH) -c $(PROGRAMMER) -p $(BOARD) -w $(TARGET)
 
-%.rel: adpcm.c  $(HAL)gpio.c $(HAL)clock_init.c $(HAL)timer.c $(HAL)itc.c
+%.rel: uart_com.c  $(HAL)gpio.c $(HAL)clock_init.c $(HAL)timer.c $(HAL)itc.c
 	@echo
 	@echo "***************"
-	@echo "compiling files"
+	@echo "uart_compiling files"
 	@echo "***************"
 	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)gpio.c  -o $(BUILD)/gpio.rel
 	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)clock_init.c -o $(BUILD)/clock_init.rel
 	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)itc.c -o $(BUILD)/itc.rel
 	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)timer.c -o $(BUILD)/timer.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c adpcm.c -o $(BUILD)/adpcm.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)uart.c -o $(BUILD)/uart.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c uart_com.c -o $(BUILD)/uart_com.rel
 	
 $(TARGET): $(OBJECTS) $(INCLUDES)
 	@echo
