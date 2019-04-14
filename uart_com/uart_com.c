@@ -17,6 +17,7 @@ void print_prompt(){
 
 void print_error(){
 	char *p;
+	_ledon();
 	p=error_msg;
 	while (*p) uputc(*p++);
 }
@@ -30,6 +31,7 @@ void main(){
 	clock_init(1);
 	enable_uart(B115200);
 	print_prompt();
+	_ledoff();
 	while (1){
 		c=ugetc();
 		switch (c){

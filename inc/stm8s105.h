@@ -33,6 +33,10 @@
 #define FLASH_BASE (0x8000)
 #define X6_FLASH_END (FLASH_BASE+X6_FLASH_SIZE-1)
 #define X4_FLASH_END (FLASH_BASE+X4_FLASH_SIZE-1)
+#define OPTION_BASE (0x4800)
+#define OPTION_END (0x487F)
+#define DEVID_BASE (0x48CD)
+#define DEVID_END (0x48D8)
 
 // options bytes
 // this one can be programmed only from SWIM (ICP)
