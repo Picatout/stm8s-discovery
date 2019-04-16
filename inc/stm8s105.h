@@ -8,6 +8,16 @@
 #define STM8S105_H
 #include <stdint.h>
 
+// bit mask
+#define BIT0 (1<<0)
+#define BIT1 (1<<1)
+#define BIT2 (1<<2)
+#define BIT3 (1<<3)
+#define BIT4 (1<<4)
+#define BIT5 (1<<5)
+#define BIT6 (1<<6)
+#define BIT7 (1<<7)
+
 #define Fmaster 16000000UL
 
 // special fonction register type
@@ -55,6 +65,67 @@
 #define OPT6 sfrp(0x480B)
 #define OPTBL sfrp(0x487E)
 #define NOPTBL sfrp(0x487F)
+// option registers usage
+// read out protection, value 0xAA enable ROP
+#define ROP OPT0  
+// user boot code, {0..0x3e} 512 bytes row
+#define UBC OPT1
+#define NUBC NOPT1
+// alternate function register
+#define AFR OPT2
+#define NAFR NOPT2
+// miscelinous options
+#define MISCOPT OPT3
+#define NMISCOPT NOPT3
+// clock options
+#define CLKOPT OPT4
+#define NCLKOPT NOPT4
+// HSE clock startup delay
+#define HSECNT OPT5
+#define NHSECNT NOPT5
+
+// MISCOPT bits
+#define  MISCOPT_HSITRIM   BIT4
+#define  MISCOPT_LSIEN     BIT3
+#define  MISCOPT_IWDG_HW   BIT2
+#define  MISCOPT_WWDG_HW   BIT1
+#define  MISCOPT_WWDG_HALT BIT0
+// NMISCOPT bits
+#define  NMISCOPT_NHSITRIM   ~BIT4
+#define  NMISCOPT_NLSIEN     ~BIT3
+#define  NMISCOPT_NIWDG_HW   ~BIT2
+#define  NMISCOPT_NWWDG_HW   ~BIT1
+#define  NMISCOPT_NWWDG_HALT ~BIT0
+// CLKOPT bits
+#define CLKOPT_EXT_CLK  BIT3
+#define CLKOPT_CKAWUSEL BIT2
+#define CLKOPT_PRS_C1   BIT1
+#define CLKOPT_PRS_C0   BIT0
+// NCLKOPT bits
+#define NCLKOPT_NEXT_CLK  ~BIT3
+#define NCLKOPT_NCKAWUSEL ~BIT2
+#define NCLKOPT_NPRS_C1   ~BIT1
+#define NCLKOPT_NPRS_C0   ~BIT0
+
+// AFR option, remapable functions
+#define AFR7_BEEP    BIT7
+#define AFR6_I2C     BIT6
+#define AFR5_TIM1    BIT5
+#define AFR4_TIM1  	 BIT4
+#define AFR3_TIM1    BIT3
+#define AFR2_CCO     BIT2
+#define AFR1_TIM2    BIT1
+#define AFR0_ADC     BIT0
+// NAFR option, remapable functions
+#define NAFR7_NBEEP    ~BIT7
+#define NAFR6_NI2C     ~BIT6
+#define NAFR5_NTIM1    ~BIT5
+#define NAFR4_NTIM1    ~BIT4
+#define NAFR3_NTIM1    ~BIT3
+#define NAFR2_NCCO     ~BIT2
+#define NAFR1_NTIM2    ~BIT1
+#define NAFR0_NADC     ~BIT0
+ 
 
 //device ID (read only)
 #define DEVID_XL sfrp(0x48CD)
@@ -174,9 +245,52 @@ typedef struct{
 #define FLASH_NCR2 sfrp(0x505C)
 #define FLASH_FPR sfrp(0x505D)
 #define FLASH_NFPR sfrp(0x505E)
-#define FLASH_IAPRS sfrp(0x505F)
+#define FLASH_IAPSR sfrp(0x505F)
 #define FLASH_PUKR sfrp(0x5062)
 #define FLASH_DUKR sfrp(0x5064)
+// data memory unlock keys
+#define FLASH_DUKR_KEY1 (0xae)
+#define FLASH_DUKR_KEY2 (0x56)
+// flash memory unlock keys
+#define FLASH_PUKR_KEY1 (0x56)
+#define FLASH_PUKR_KEY2 (0xae)
+// FLASH_CR1 bits
+#define FLASH_CR1_HALT BIT3
+#define FLASH_CR1_AHALT BIT2
+#define FLASH_CR1_IE BIT1
+#define FLASH_CR1_FIX BIT0
+// FLASH_CR2 bits
+#define FLASH_CR2_OPT BIT7
+#define FLASH_CR2_WPRG BIT6
+#define FLASH_CR2_ERASE BIT5
+#define FLASH_CR2_FPRG BIT4
+#define FLASH_CR2_PRG BIT0
+// FLASH_NCR2 bits
+#define FLASH_NCR2_NOPT ~BIT7
+#define FLASH_NCR2_NWPRG ~BIT6
+#define FLASH_NCR2_NERASE ~BIT5
+#define FLASH_NCR2_NFPRG ~BIT4
+#define FLASH_NCR2_NPRG ~BIT0
+// FLASH_FPR bits
+#define FLASH_FPR_WPB5 BIT5
+#define FLASH_FPR_WPB4 BIT4
+#define FLASH_FPR_WPB3 BIT3
+#define FLASH_FPR_WPB2 BIT2
+#define FLASH_FPR_WPB1 BIT1
+#define FLASH_FPR_WPB0 BIT0
+// FLASH_NFPR bits
+#define FLASH_NFPR_NWPB5 BIT5
+#define FLASH_NFPR_NWPB4 BIT4
+#define FLASH_NFPR_NWPB3 BIT3
+#define FLASH_NFPR_NWPB2 BIT2
+#define FLASH_NFPR_NWPB1 BIT1
+#define FLASH_NFPR_NWPB0 BIT0
+// FLASH_IAPSR bits
+#define FLASH_IAPSR_HVOFF BIT6
+#define FLASH_IAPSR_DUL BIT3
+#define FLASH_IAPSR_EOP BIT2
+#define FLASH_IAPSR_PUL BIT1
+#define FLASH_IAPSR_WR_PG_DIS BIT0
 
 /* Interrupt control */
 #define EXTI_CR1 sfrp(0x50A0)

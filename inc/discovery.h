@@ -35,5 +35,7 @@ extern void uprint(const char* str);
 extern uint8_t ureadln(char *buff, uint8_t size);
 // print an integer in decimal base
 void uprint_int(int16_t i);
+// delete n character left of cursor
+void delete_left(uint8_t n);
 
 #endif

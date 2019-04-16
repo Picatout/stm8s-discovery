@@ -89,6 +89,12 @@ uint8_t ureadln(char *buf, uint8_t size){
 				uputc(CTRL_H);
 			}
 			break;
+		case CTRL_R:
+			if (!len){
+			 while (len<size && buf[len])len++;
+			 uprint(buf);
+			}
+			break;
 		case CTRL_X:
 			delete_left(len);
 			len=0;

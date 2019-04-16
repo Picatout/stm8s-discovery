@@ -44,6 +44,49 @@ __at(RAM_BASE+1024) static uint8_t ram_code[DATA_SIZE];
 static uint8_t here=0;
 static jmp_buf env;
 
+// write data eeprom or option
+static int write_eeprom_byte(uint8_t *addr, uint8_t value){
+	uint8_t fOption=(((uint16_t)addr & 0xff00)==OPTION_BASE);
+	
+	    /* unlock EEPROM write*/
+    FLASH_DUKR = FLASH_DUKR_KEY1;
+    FLASH_DUKR = FLASH_DUKR_KEY2;
+    if (fOption){
+		/* unlock option bytes */
+		FLASH_CR2 |= FLASH_CR2_OPT;
+		FLASH_NCR2 &= FLASH_NCR2_NOPT;
+	}
+    if (!(FLASH_IAPSR & FLASH_IAPSR_DUL)){
+		return 0;
+	}
+	nointerrupts();
+    *addr++=value;
+    if (fOption){ *addr=~value;}
+    /* wait until programming is finished */
+    while (!(FLASH_IAPSR & FLASH_IAPSR_EOP));
+    /* lock EEPROM */
+    FLASH_IAPSR &= ~FLASH_IAPSR_DUL;
+	interrupts();
+	return 1;
+}
+
+static int write_flash_byte(uint8_t* addr, uint8_t value){
+	// unlock flash write
+	FLASH_PUKR=FLASH_PUKR_KEY1;
+	FLASH_PUKR=FLASH_PUKR_KEY2;
+	if (!(FLASH_IAPSR & FLASH_IAPSR_PUL)){
+		return 0;
+	}
+	nointerrupts();
+	*addr=value;
+    /* wait until programming is finished */
+    while (!(FLASH_IAPSR & FLASH_IAPSR_EOP));
+    /* lock flash */
+    FLASH_IAPSR &= ~FLASH_IAPSR_PUL;
+    interrupts();
+    return 1;
+}
+
 //convert to hex string
 // buf point to 0 terminator, 
 static char* to_hex(char* buf, uint16_t number, uint8_t width){
@@ -143,12 +186,25 @@ static void cmd_peek(){
 	report(addr,value);
 }
 
+static void write_value(uint8_t* addr, uint8_t value){
+	uint8_t result=1;
+	if (((uint16_t)addr>=EEPROM_BASE) && ((uint16_t)addr<=OPTION_END)){
+		result=write_eeprom_byte(addr,value);
+	}else if ((uint16_t)addr>=FLASH_BASE){
+		result=write_flash_byte(addr,value);
+	}else{
+		*addr=value;
+	}
+	if (!result) uprint("write failed\n");
+}
+
+
 static void cmd_poke(){
 	uint16_t addr;
 	uint8_t value;
 	addr=number();
 	value=number();
-	*(volatile uint8_t*)addr=value;
+	write_value((uint8_t*)addr,value);
 	report(addr,value);
 }
 
@@ -158,10 +214,10 @@ static void cmd_store(){
 	addr=number();
 	do {
 		skip(' ');
-		if (tib[in]==';') break;
 		value=number();
 		report(addr,value);
-		*(volatile uint8_t*)addr++=value;
+		write_value((uint8_t*)addr,value);
+		addr++;
 	}while(in<count);
 }
 
@@ -200,7 +256,9 @@ static void cmd_hdump(){
 		dump_row(addr); // print 8 bytes.
 		addr+=8;
 		uputc('?');
-	}while ((c=ugetc())==SPACE);
+		c=ugetc();
+		delete_left(1);
+	}while (c==SPACE);
 }
 
 static void cmd_set(){
