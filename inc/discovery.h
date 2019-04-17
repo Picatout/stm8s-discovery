@@ -6,6 +6,11 @@
 #define DISCO_H
 #include "stm8s105.h"
 
+#define TRUE -1
+#define FALSE 0
+
+typedef signed char bool;
+
 //macros
 #define LED PIN0   // on board green led connected PD0
 #define _ledon() _clrbit(PD_ODR,LED)
@@ -24,7 +29,7 @@ extern void enable_uart(baud_t baud);
 // set communication speed
 extern void set_baudrate(baud_t baud);
 // check if character in receiver.
-extern uint8_t qchar();
+extern bool qchar();
 // retreive character received
 extern signed char ugetc();
 // send character

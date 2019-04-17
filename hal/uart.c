@@ -37,8 +37,8 @@ void set_baudrate(baud_t baud){
 }
 
 // check if character available from UART2
-uint8_t qchar(){
-	return UART2_SR&UART_SR_RXNE;
+bool qchar(){
+	return (UART2_SR&UART_SR_RXNE)?TRUE:FALSE;
 }
 
 // get a character from UART2
