@@ -277,7 +277,7 @@ static void cmd_store(){
 	addr=number();
 	do {
 		skip(' ');
-		if (tib[in]==':')break;
+		if ((tib[in]==':') || (tib[in]==';'))break;
 		value=(int8_t)number();
 		report(addr,value);
 		write_value((uint8_t*)addr,(uint8_t)value);
@@ -351,6 +351,7 @@ static void cmd_execute(){
 
 
 static void exec_cmd(){
+	int16_t tmp;
 	switch(pad[0]){
 	case '@':
 		cmd_peek();
@@ -358,24 +359,39 @@ static void exec_cmd(){
 	case '!':
 		cmd_store();
 		break;
+	case ';': // comment
+		in=count;
+		break;
 	case ':':
 		ctrl_stack[++csp]=in;
 		break;
 	case 'c':
 		cmd_clear();
 		break;
-	case 'd':
-	    delay_msec(number());
-	    break;
+	case 'd': // dup ( n -- n n )
+		if (asp>=0){
+			tmp=arg_stack[asp];
+			 arg_stack[++asp]=tmp;
+		 }
+	    break;	
 	case 'e':
-		if (asp>=0)uputc(arg_stack[asp--]&&0x7f);
+		if (asp>=0)uputc(arg_stack[asp--]&0x7f);
 		break;
 	case 'h':
 		cmd_hdump();
 		break;
     case 'k':
         arg_stack[++asp]=(int16_t)qchar();
-        break;		
+        break;
+	case 'm':
+	    delay_msec(number());
+	    break;
+    case 'o':
+        if (asp>=1){
+			 tmp=arg_stack[asp-1];
+			 arg_stack[++asp]=tmp;
+		 }
+        break;
     case '?':
 		if (!((asp>=0) && arg_stack[asp--])){
 			break;
@@ -399,10 +415,10 @@ static void exec_cmd(){
 	   if (asp>=0)arg_stack[asp]=~arg_stack[asp];
 	   break;
 	case '-': 
-		arg_stack[++asp]=number()-number();
+	    arg_stack[asp-1]=arg_stack[asp-1]-arg_stack[asp--];
 		break;
 	case '+': 
-	    arg_stack[++asp]=number()+number();
+	    arg_stack[asp-1]=arg_stack[asp-1]+arg_stack[asp--];
 	    break;
 	default:
 	    if (! try_number()) print_error();
