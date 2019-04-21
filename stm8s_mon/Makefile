@@ -14,9 +14,11 @@ CFLAGS=
 FLASH=stm8flash
 HAL=../hal/
 INC=../inc/
+LIB=../lib/
 INCLUDES=$(INC)stm8s105.h $(INC)discovery.h
 BUILD=build/
-OBJECTS=$(BUILD)clock_init.rel $(BUILD)gpio.rel $(BUILD)stm8s_mon.rel $(BUILD)timer.rel $(BUILD)itc.rel $(BUILD)uart.rel
+OBJECTS=$(BUILD)clock_init.rel $(BUILD)gpio.rel $(BUILD)stm8s_mon.rel $(BUILD)timer.rel $(BUILD)itc.rel $(BUILD)uart.rel\
+$(BUILD)strings.rel
 SYMBOLS=$(OBJECTS:.rel=.sym)
 ASMS=$(OBJECTS:.rel=.asm)
 LISTS=$(OBJECTS:.rel=.lst)
@@ -41,13 +43,14 @@ flash: $(TARGET)
 	@echo "***************"
 	@echo "stm8s_monpiling files"
 	@echo "***************"
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)gpio.c  -o $(BUILD)/gpio.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)clock_init.c -o $(BUILD)/clock_init.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)itc.c -o $(BUILD)/itc.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)timer.c -o $(BUILD)/timer.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)uart.c -o $(BUILD)/uart.rel
-	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c stm8s_mon.c -o $(BUILD)/stm8s_mon.rel
-	
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)gpio.c  -o $(BUILD)gpio.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)clock_init.c -o $(BUILD)clock_init.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)itc.c -o $(BUILD)itc.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)timer.c -o $(BUILD)timer.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(HAL)uart.c -o $(BUILD)uart.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c stm8s_mon.c -o $(BUILD)stm8s_mon.rel
+	$(SDCC) -mstm8 -lstm8 $(CFLAGS) -c $(LIB)strings.c -o $(BUILD)strings.rel
+
 $(TARGET): $(OBJECTS) $(INCLUDES)
 	@echo
 	@echo "***************"

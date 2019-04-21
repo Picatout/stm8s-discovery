@@ -42,5 +42,11 @@ extern uint8_t ureadln(char *buff, uint8_t size);
 void uprint_int(int16_t i);
 // delete n character left of cursor
 void delete_left(uint8_t n);
+// unget character received from uart
+void ungetc(signed char c);
+//in situ uppercase
+void upper(char* str);
+// string comparison
+int8_t strcmp(const char *s1, const char*s2);
 
 #endif

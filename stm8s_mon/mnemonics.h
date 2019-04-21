@@ -11,9 +11,10 @@
 #define PIY (0x91)
 #define PIX (0x92)
 
+
 typedef struct{
-	const uint8_t code;
 	const char *mneno;
 } mnemonic_t;
+
 
 #endif 

@@ -36,15 +36,28 @@ void set_baudrate(baud_t baud){
 	UART2_BRR1=(br>>4)&0xff;
 }
 
+static signed char ungetted=-1;
+
+// return unwanted character
+void ungetc(signed char c){
+	ungetted=c;
+}
+
 // check if character available from UART2
 bool qchar(){
-	return (UART2_SR&UART_SR_RXNE)?TRUE:FALSE;
+	return ((ungetted>-1) || (UART2_SR&UART_SR_RXNE))?TRUE:FALSE;
 }
 
 // get a character from UART2
 signed char ugetc(){
 	uint8_t status;
 	signed char c;
+	
+	if (ungetted>-1){
+		c=ungetted;
+		ungetted=-1;
+		return c;
+	}
 	while (!(status=UART2_SR&(UART_SR_FE|UART_SR_OR|UART_SR_NF|UART_SR_RXNE)));
 	c=UART2_DR;
 	if (status != UART_SR_RXNE) c=-1;
@@ -81,6 +94,9 @@ uint8_t ureadln(char *buf, uint8_t size){
 			buf[len]=0;
 			eol=1;
 			break;
+		case CTRL_C:
+			*buf=0;
+			return 0;
 		case CTRL_H:
 			if (len){
 				uputc(CTRL_H);

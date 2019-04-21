@@ -46,8 +46,8 @@ static int8_t asp=0;
 static uint8_t count;
 static uint8_t in;
 static uint8_t first;
-#define DATA_SIZE 1024
-__at(RAM_BASE+1024) static uint8_t ram_code[DATA_SIZE];
+#define ENV_SIZE 1024
+static uint8_t ram_code[ENV_SIZE];
 static uint8_t here=0;
 static jmp_buf env;
 
@@ -365,47 +365,49 @@ static void exec_cmd(){
 	case ':':
 		ctrl_stack[++csp]=in;
 		break;
-	case 'c':
+	case 'C':
 		cmd_clear();
 		break;
-	case 'd': // dup ( n -- n n )
+	case 'D': // dup ( n -- n n )
 		if (asp>=0){
 			tmp=arg_stack[asp];
 			 arg_stack[++asp]=tmp;
 		 }
 	    break;	
-	case 'e':
+	case 'E':
 		if (asp>=0)uputc(arg_stack[asp--]&0x7f);
 		break;
-	case 'h':
+	case 'H':
 		cmd_hdump();
 		break;
-    case 'k':
-        arg_stack[++asp]=(int16_t)qchar();
+    case 'K':
+        if (qchar()){
+			 arg_stack[++asp]=(int16_t)ugetc();
+		}else arg_stack[++asp]=0;
         break;
-	case 'm':
+	case 'M':
 	    delay_msec(number());
 	    break;
-    case 'o':
+    case 'O':
         if (asp>=1){
 			 tmp=arg_stack[asp-1];
 			 arg_stack[++asp]=tmp;
 		 }
         break;
     case '?':
-		if (!((asp>=0) && arg_stack[asp--])){
+		if ((asp>=0) && arg_stack[asp--]){
 			break;
-		} 
-    case 'r':
+		}
+    case 'R':
         if (csp>=0) in=ctrl_stack[csp]; else in=0;
         break;
-	case 's':
+	case 'S':
 		cmd_set();
 		break;
-	case 't':
+	case 'T':
 	    cmd_toggle();
 		break;
-	case 'x':
+	case 'X':
 		cmd_execute();
 		break;
 	case '.': // print TOS
@@ -420,24 +422,42 @@ static void exec_cmd(){
 	case '+': 
 	    arg_stack[asp-1]=arg_stack[asp-1]+arg_stack[asp--];
 	    break;
+	case '*':
+	    arg_stack[asp-1]=arg_stack[asp-1]*arg_stack[asp--];
+	    break;
+	case '/':
+	   arg_stack[asp-1]=arg_stack[asp-1]/arg_stack[asp--];    
+	   break;
+	case '%':
+	   arg_stack[asp-1]=arg_stack[asp-1]%arg_stack[asp--];
+	   break;
 	default:
-	    if (! try_number()) print_error();
+	    if (! try_number()){
+			 uputc(pad[0]);uputc(' ');
+			 print_error();
+		 }
 		break;
 	}//switch
 }
 
 
 static void parse_line(){
+	signed char c;
 	in=0;
 	csp=0;
 	while (csp<CSTK_SIZE)ctrl_stack[csp++]=0;
 	csp=-1;
 	asp=-1;
+	
 //	if (!setjmp(env)){
 		while (in<count){
 			word();
 			exec_cmd();
-			if (qchar()&& ugetc()==CTRL_C) break;
+			if (qchar()){
+				c=ugetc();
+				if (c==CTRL_C) break;
+				ungetc(c);
+			}
 		}
 		if (asp>-1){
 			uprint("s: ");
@@ -452,7 +472,6 @@ static void parse_line(){
 //	}
 }
 
-
 void main(){
 	clock_init(1);
 	timer4_init();
@@ -462,6 +481,7 @@ void main(){
 	_ledoff();
 	while (1){
 		count=ureadln(tib,TIB_SIZE-1);
+		upper(tib);
 		parse_line();
 	}
 }
