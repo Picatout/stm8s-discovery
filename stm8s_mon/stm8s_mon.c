@@ -28,7 +28,7 @@
 *  ASCII 32  (space) is the only separator between tokens.
 */
 
-#include <setjmp.h>
+//#include <setjmp.h>
 #include "../inc/ascii.h"
 #include "../inc/discovery.h"
 
@@ -37,6 +37,7 @@
 #define PAD_SIZE 80
 #define CSTK_SIZE 8
 #define ASTK_SIZE 16
+static signed char *eval_str;
 static signed char tib[TIB_SIZE];
 static signed char pad[PAD_SIZE];
 static uint8_t ctrl_stack[CSTK_SIZE];
@@ -47,11 +48,10 @@ static uint8_t count;
 static uint8_t in;
 static uint8_t first;
 #define ENV_SIZE 1024
-static uint8_t ram_code[ENV_SIZE];
-static uint8_t here=0;
-static jmp_buf env;
+static char env[ENV_SIZE];
+static uint16_t here=0;
 
-// control stack macros
+static void eval();
 
 // write data eeprom or option
 static int write_eeprom_byte(uint8_t *addr, uint8_t value){
@@ -149,13 +149,39 @@ static char* to_hex(char* buf, uint16_t number, uint8_t width){
 	return buf;
 }
 
+
 // copy from src to dest bc character
-static void move(char *dest, const char* src,int8_t bc){
+static void move(char *dest, const char* src,int16_t bc){
 	while (bc>0){
 		 *dest++=*src++;
 		 bc--;
 	 }
 }
+
+int16_t search_var(const char *name){
+	int16_t i=0;
+	while (i<here){
+		if (!strcmp(&env[i],name)){
+			return i;
+		}
+		i+=strlen(&env[i])+1;
+		i+=(int16_t)env[i]+1;
+	}
+	return -1;
+}
+
+void delete_var(int16_t pos){
+	int8_t name_len,val_len;
+	int16_t var_next;
+	
+	name_len=(int8_t)strlen(&env[pos]);
+	val_len=(int8_t)env[pos+name_len+2];
+	var_next=pos+name_len+2+val_len;
+	move(&env[pos],(const char*)&env[var_next],here-var_next);
+	here-=here-var_next;
+	memset(&env[here],0,ENV_SIZE-here);
+}
+
 
 static const char error_msg[]="command error\n";
 
@@ -170,21 +196,21 @@ static inline void print_error(){
 	uprint(error_msg);
 }
 
-// skip character c in tib
+// skip character c in eval_str
 static void skip(signed char c){
-	while (tib[in] && (tib[in]==c)){in++;}
+	while ((in<count) && eval_str[in] && (eval_str[in]==c)){in++;}
 }
 
-// scan tib for first occurance of c
+// scan eval_str for first occurance of c
 static void scan(signed char c){
-	while(tib[in] && (tib[in]!=c)){in++;}
+	while((in<count) && eval_str[in] && (eval_str[in]!=c)){in++;}
 }
 
 static void word(){
 	skip(' ');
 	first=in;  
 	scan(' '); 
-	move(pad,(const char*)&tib[first],in-first);
+	move(pad,(const char*)&eval_str[first],in-first);
 	pad[in-first]=0;
 }
 
@@ -277,7 +303,7 @@ static void cmd_store(){
 	addr=number();
 	do {
 		skip(' ');
-		if ((tib[in]==':') || (tib[in]==';'))break;
+		if ((eval_str[in]==':') || (eval_str[in]==';'))break;
 		value=(int8_t)number();
 		report(addr,value);
 		write_value((uint8_t*)addr,(uint8_t)value);
@@ -294,21 +320,25 @@ static void cmd_clear(){
 }
 
 static void dump_row(uint16_t addr){
-	uint8_t i=8;
+	uint8_t i=0;
 	int8_t i8;
-	char *str;
+	char *str, ascii[11];
+	ascii[0]=ascii[1]=' ';
+	ascii[10]=0;
 	str=to_hex(&pad[8],addr,6);
 	pad[8]=' ';
 	pad[9]=' ';
 	pad[10]=0;
 	uprint(str);
 	pad[9]=0;
-	while (i){
+	while (i<8){
 		i8=*(int8_t*)addr++;
+		if (i8>31) ascii[i+2]=i8;else ascii[i+2]=' ';
 		str=to_hex(&pad[8],i8,2);
 		uprint(str);
-		i--;
+		i++;
 	}
+	uprint(ascii);
 	uputc('\n');
 }
 
@@ -349,6 +379,52 @@ static void cmd_execute(){
 	((fn)xaddr)();
 }
 
+const char MSG_ENV_FULL[]="failed, environment full\n";
+static void cmd_create_var(){
+	int16_t i;
+	
+	word(); // variable name
+	i=search_var((const char*)pad);
+	if (i>-1) delete_var(i);
+	skip(' ');
+	if (in<count){
+		if ((here+strlen((const char*)pad)+2+count-in)>=ENV_SIZE){
+			uprint(MSG_ENV_FULL);
+		}else{
+			strcpy(&env[here],(const char*)pad);
+			here+=strlen((const char*)pad)+1;
+			env[here++]=count-in;
+			move(&env[here],&eval_str[in],env[here-1]);
+			here+=env[here-1];
+			in=count;
+		}
+	}
+	uprint_int(ENV_SIZE-here);
+	uprint(" env. bytes left\n");
+}
+
+static void var_eval(){
+	int16_t i;
+	uint8_t cnt_save,in_save;
+	signed char *eval_save;
+	
+	i=search_var(pad);
+	if (i>-1){
+		i+=strlen(&env[i])+1;
+		cnt_save=count;
+		in_save=in;
+		eval_save=eval_str;
+		in=0;
+		count=(uint8_t)env[i++];
+		eval_str=&env[i];
+		eval();
+		count=cnt_save;
+		in=in_save;
+		eval_str=eval_save;
+	}else{
+		in=count;
+	}
+}
 
 static void exec_cmd(){
 	int16_t tmp;
@@ -362,9 +438,15 @@ static void exec_cmd(){
 	case ';': // comment
 		in=count;
 		break;
-	case ':':
+	case ':': // mark loop begin
 		ctrl_stack[++csp]=in;
 		break;
+	case '\'': // create env variable
+		cmd_create_var();
+		break;
+	case '_': // execute variable
+	    var_eval();
+	    break;
 	case 'C':
 		cmd_clear();
 		break;
@@ -441,14 +523,8 @@ static void exec_cmd(){
 }
 
 
-static void parse_line(){
+static void eval(){
 	signed char c;
-	in=0;
-	csp=0;
-	while (csp<CSTK_SIZE)ctrl_stack[csp++]=0;
-	csp=-1;
-	asp=-1;
-	
 //	if (!setjmp(env)){
 		while (in<count){
 			word();
@@ -459,14 +535,6 @@ static void parse_line(){
 				ungetc(c);
 			}
 		}
-		if (asp>-1){
-			uprint("s: ");
-			while (asp>-1){
-				uprint_int(arg_stack[asp--]);
-				uputc(' ');
-			}
-		}
-		uprint(" ok\n");
 //	}else{
 //		print_error();
 //	}
@@ -482,6 +550,21 @@ void main(){
 	while (1){
 		count=ureadln(tib,TIB_SIZE-1);
 		upper(tib);
-		parse_line();
+		eval_str=tib;
+		in=0;
+		csp=0;
+		while (csp<CSTK_SIZE)ctrl_stack[csp++]=0;
+		csp=-1;
+		asp=-1;
+		eval();
+		if (asp>-1){
+			uprint("s: ");
+			while (asp>-1){
+				uprint_int(arg_stack[asp--]);
+				uputc(' ');
+			}
+		}
+		uprint(" ok\n");
 	}
 }
+

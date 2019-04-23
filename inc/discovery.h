@@ -48,5 +48,11 @@ void ungetc(signed char c);
 void upper(char* str);
 // string comparison
 int8_t strcmp(const char *s1, const char*s2);
+// string copy
+char *strcpy(char *dest, const char *src);
+// string length
+int strlen(const char* str);
+// fill str with character 'c'
+void memset(char *str,char c, int16_t count);
 
 #endif
