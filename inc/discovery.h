@@ -18,6 +18,7 @@ typedef signed char bool;
 #define _ledtoggle() _togglebit(PD_ODR,LED)
 #define _enable_dev_clock(reg,dev) _setbit(reg,dev)
 
+
 // exported functions
 // system clock initialization to 16Mhz HSE
 extern void clock_init(int wait);
@@ -30,20 +31,12 @@ extern void enable_uart(baud_t baud);
 extern void set_baudrate(baud_t baud);
 // check if character in receiver.
 extern bool qchar();
-// retreive character received
-extern signed char ugetc();
-// send character
-extern void uputc(char c);
-// print ASCIIZ string
-extern void uprint(const char* str);
 // read a line of text
 extern uint8_t ureadln(char *buff, uint8_t size);
-// print an integer in decimal base
-void uprint_int(int16_t i);
 // delete n character left of cursor
 void delete_left(uint8_t n);
 // unget character received from uart
-void ungetc(signed char c);
+void ungetchar(signed char c);
 //in situ uppercase
 void upper(char* str);
 // string comparison

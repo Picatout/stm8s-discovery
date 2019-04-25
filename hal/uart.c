@@ -4,15 +4,18 @@
 *   TX on PD6
 */
 
+#include <stdio.h>
 #include "../inc/discovery.h"
 #include "../inc/ascii.h"
 
+#define  _no_rx_interrupt() {UART2_CR2&=~UART_CR2_RIEN;}
+#define  _rx_interrupt() {UART2_CR2|=UART_CR2_RIEN;}
 
 void enable_uart(baud_t baud){
 		set_pin_mode(PD,PIN5,OUTPUT_PP_FAST);
 		set_pin_mode(PD,PIN0,OUTPUT_OD_SLOW);
 		set_baudrate(baud);
-		UART2_CR2=UART_CR2_TEN|UART_CR2_REN;
+		UART2_CR2=UART_CR2_TEN|UART_CR2_REN|UART_CR2_RIEN;
 }
 
 // brr divisor values for Fmaster=16Mhz
@@ -36,45 +39,42 @@ void set_baudrate(baud_t baud){
 	UART2_BRR1=(br>>4)&0xff;
 }
 
-static signed char ungetted=-1;
+static volatile char rxchar=-1;
 
 // return unwanted character
-void ungetc(signed char c){
-	ungetted=c;
+void ungetchar(signed char c){
+	_no_rx_interrupt();
+	if (rxchar==-1)rxchar=c;
+	_rx_interrupt();
 }
 
 // check if character available from UART2
 bool qchar(){
-	return ((ungetted>-1) || (UART2_SR&UART_SR_RXNE))?TRUE:FALSE;
+	return (rxchar>-1)?TRUE:FALSE;
 }
 
 // get a character from UART2
-signed char ugetc(){
-	uint8_t status;
-	signed char c;
-	
-	if (ungetted>-1){
-		c=ungetted;
-		ungetted=-1;
-		return c;
-	}
-	while (!(status=UART2_SR&(UART_SR_FE|UART_SR_OR|UART_SR_NF|UART_SR_RXNE)));
-	c=UART2_DR;
-	if (status != UART_SR_RXNE) c=-1;
+char getchar(){
+	char c;
+	while (rxchar==-1);
+	_no_rx_interrupt();
+	c=rxchar;
+	rxchar=-1;
+	_rx_interrupt();
 	return c;
 }
 
 // send a character via uart2
-void uputc(char c){
+void putchar(char c){
 	while (!(UART2_SR&UART_SR_TXE));
 	UART2_DR=c;
 }
 
 void delete_left(uint8_t count){
 	while(count){
-		uputc(CTRL_H);
-		uputc(' ');
-		uputc(CTRL_H);
+		putchar(CTRL_H);
+		putchar(' ');
+		putchar(CTRL_H);
 		count--;
 	}
 }
@@ -86,11 +86,11 @@ uint8_t ureadln(char *buf, uint8_t size){
 	uint8_t eol=0,len=0;
 	
 	while (!eol){
-		c=ugetc();
+		c=getchar();
 		switch(c){
 		case '\n':
 		case '\r':
-			uputc('\n');
+			putchar('\n');
 			buf[len]=0;
 			eol=1;
 			break;
@@ -99,16 +99,16 @@ uint8_t ureadln(char *buf, uint8_t size){
 			return 0;
 		case CTRL_H:
 			if (len){
-				uputc(CTRL_H);
+				putchar(CTRL_H);
 				len--;
-				uputc(' ');
-				uputc(CTRL_H);
+				putchar(' ');
+				putchar(CTRL_H);
 			}
 			break;
 		case CTRL_R:
 			if (!len){
 			 while (len<size && buf[len])len++;
-			 uprint(buf);
+			 printf(buf);
 			}
 			break;
 		case CTRL_X:
@@ -117,7 +117,7 @@ uint8_t ureadln(char *buf, uint8_t size){
 			break;
 		default:
 			if ((c>=' ') && (len<size)){
-				uputc(c);
+				putchar(c);
 				buf[len++]=c;
 			}
 		}//switch
@@ -125,25 +125,16 @@ uint8_t ureadln(char *buf, uint8_t size){
 	return len;
 }
 
-void uprint(const char* str){
-	while (*str) uputc(*str++);
-}
 
-void uprint_int(int16_t i){
-	char sign=0,j=8, str[8];
-	if (i<0){ 
-		sign=-1;
-		i=-i;
-	}
-	str[--j]=0;
-	while (i){
-		str[--j]=i%10+'0';
-		i/=10;
-	}
-	if (j==7) str[--j]='0';
-	if (sign<0){
-		str[--j]='-';
-	}
-	uprint(&str[j]);
+// uart interrupt service routine
+// used to received character
+void uart2_rx_isr(void) __interrupt(INT_UART2_RX_FULL){
+		uint8_t status,dr;
+		
+		status=UART2_SR;
+		dr=UART2_DR;
+		if (status && UART_SR_RXNE){
+			rxchar=dr;
+		}
 }
 

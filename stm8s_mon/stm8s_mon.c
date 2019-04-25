@@ -28,10 +28,13 @@
 *  ASCII 32  (space) is the only separator between tokens.
 */
 
-//#include <setjmp.h>
+#include <stdio.h>
+#include <setjmp.h>
 #include "../inc/ascii.h"
 #include "../inc/discovery.h"
 
+// must be declare in this file to be include in vector table!!!
+void uart2_rx_isr(void) __interrupt(INT_UART2_RX_FULL);
 
 #define TIB_SIZE 80
 #define PAD_SIZE 80
@@ -50,6 +53,8 @@ static uint8_t first;
 #define ENV_SIZE 1024
 static char env[ENV_SIZE];
 static uint16_t here=0;
+
+static jmp_buf abort;
 
 static void eval();
 
@@ -145,7 +150,7 @@ static char* to_hex(char* buf, uint16_t number, uint8_t width){
         *--buf=(char)d;
         width--;		
 	}
-	*--buf='$';
+//	*--buf='$';
 	return buf;
 }
 
@@ -175,25 +180,22 @@ void delete_var(int16_t pos){
 	int16_t var_next;
 	
 	name_len=(int8_t)strlen(&env[pos]);
-	val_len=(int8_t)env[pos+name_len+2];
+	val_len=(int8_t)env[pos+name_len+1];
 	var_next=pos+name_len+2+val_len;
 	move(&env[pos],(const char*)&env[var_next],here-var_next);
-	here-=here-var_next;
+	here-=var_next-pos;
 	memset(&env[here],0,ENV_SIZE-here);
 }
 
 
-static const char error_msg[]="command error\n";
+static const char error_msg[]="command error";
 
-static const char prompt[]="READY\n";
+static const char prompt[]="READY";
 
-static inline void print_prompt(){
-	uprint(prompt);
-}
 
 static inline void print_error(){
 	_ledon();
-	uprint(error_msg);
+	puts(error_msg);
 }
 
 // skip character c in eval_str
@@ -222,7 +224,7 @@ static int16_t pad2i(){
 	if (pad[i]=='-'){
 		negative=TRUE;
 		i++;
-	}else if (pad[i]=='$'){b=16;i++;}
+	}else if ((pad[i]=='0') && ((pad[i+1]=='x')||(pad[i+1]=='X'))){b=16;i+=2;}
 	while(pad[i]){
 		d=(pad[i++]-'0')&0x1f;
 		if (d>9) d-=7;
@@ -254,16 +256,10 @@ static void report(uint16_t addr, int8_t value){
 		char *str;
 		pad[6]=0;
 		str=to_hex(&pad[6],addr,4);
-	    uprint(str);
-	    uputc('(');
-	    uprint_int(addr);
-	    uprint(")=");
+		printf("%s(%d)=",str,addr);
 	    pad[4]=0;
 	    str=to_hex(&pad[4],(uint8_t)value,2);
-	    uprint(str);
-	    uputc('(');
-	    uprint_int((int16_t)value);
-	    uprint(")\n");
+	    printf("%s(%d)\n",str,value);
 }
 
 static void cmd_peek(){
@@ -283,19 +279,8 @@ static void write_value(uint8_t* addr, uint8_t value){
 	}else{
 		*addr=value;
 	}
-	if (!result) uprint("write failed\n");
+	if (!result) puts("write failed");
 }
-
-/*
-static void cmd_poke(){
-	uint16_t addr;
-	uint8_t value;
-	addr=number();
-	value=number();
-	write_value((uint8_t*)addr,value);
-	report(addr,value);
-}
-*/
 
 static void cmd_store(){
 	uint16_t addr;
@@ -329,29 +314,28 @@ static void dump_row(uint16_t addr){
 	pad[8]=' ';
 	pad[9]=' ';
 	pad[10]=0;
-	uprint(str);
+	printf(str);
 	pad[9]=0;
 	while (i<8){
 		i8=*(int8_t*)addr++;
 		if (i8>31) ascii[i+2]=i8;else ascii[i+2]=' ';
 		str=to_hex(&pad[8],i8,2);
-		uprint(str);
+		printf(str);
 		i++;
 	}
-	uprint(ascii);
-	uputc('\n');
+	puts(ascii);
 }
 
 static void cmd_hdump(){
 	uint16_t addr;
 	signed char c;
-	while (qchar()) ugetc();
+	while (qchar()) getchar();
 	addr=number();
 	do{
 		dump_row(addr); // print 8 bytes.
 		addr+=8;
-		uputc('?');
-		c=ugetc();
+		putchar('?');
+		c=getchar();
 		delete_left(1);
 	}while (c==SPACE);
 }
@@ -379,7 +363,7 @@ static void cmd_execute(){
 	((fn)xaddr)();
 }
 
-const char MSG_ENV_FULL[]="failed, environment full\n";
+const char MSG_ENV_FULL[]="failed, environment full.";
 static void cmd_create_var(){
 	int16_t i;
 	
@@ -389,7 +373,7 @@ static void cmd_create_var(){
 	skip(' ');
 	if (in<count){
 		if ((here+strlen((const char*)pad)+2+count-in)>=ENV_SIZE){
-			uprint(MSG_ENV_FULL);
+			puts(MSG_ENV_FULL);
 		}else{
 			strcpy(&env[here],(const char*)pad);
 			here+=strlen((const char*)pad)+1;
@@ -399,8 +383,7 @@ static void cmd_create_var(){
 			in=count;
 		}
 	}
-	uprint_int(ENV_SIZE-here);
-	uprint(" env. bytes left\n");
+	printf("%d env. bytes left\n",ENV_SIZE-here);
 }
 
 static void var_eval(){
@@ -408,7 +391,7 @@ static void var_eval(){
 	uint8_t cnt_save,in_save;
 	signed char *eval_save;
 	
-	i=search_var(pad);
+	i=search_var(&pad[1]);
 	if (i>-1){
 		i+=strlen(&env[i])+1;
 		cnt_save=count;
@@ -444,7 +427,7 @@ static void exec_cmd(){
 	case '\'': // create env variable
 		cmd_create_var();
 		break;
-	case '_': // execute variable
+	case '$': // variable substitution
 	    var_eval();
 	    break;
 	case 'C':
@@ -457,14 +440,14 @@ static void exec_cmd(){
 		 }
 	    break;	
 	case 'E':
-		if (asp>=0)uputc(arg_stack[asp--]&0x7f);
+		if (asp>=0)putchar(arg_stack[asp--]&0x7f);
 		break;
 	case 'H':
 		cmd_hdump();
 		break;
     case 'K':
         if (qchar()){
-			 arg_stack[++asp]=(int16_t)ugetc();
+			 arg_stack[++asp]=(int16_t)getchar();
 		}else arg_stack[++asp]=0;
         break;
 	case 'M':
@@ -493,7 +476,7 @@ static void exec_cmd(){
 		cmd_execute();
 		break;
 	case '.': // print TOS
-	   if (asp>=0) uprint_int(arg_stack[asp--]);
+	   if (asp>=0) printf("%d",arg_stack[asp--]);
 	   break;
 	case '~':
 	   if (asp>=0)arg_stack[asp]=~arg_stack[asp];
@@ -515,7 +498,7 @@ static void exec_cmd(){
 	   break;
 	default:
 	    if (! try_number()){
-			 uputc(pad[0]);uputc(' ');
+			 putchar(pad[0]);putchar(' ');
 			 print_error();
 		 }
 		break;
@@ -525,19 +508,18 @@ static void exec_cmd(){
 
 static void eval(){
 	signed char c;
-//	if (!setjmp(env)){
+
 		while (in<count){
 			word();
 			exec_cmd();
 			if (qchar()){
-				c=ugetc();
-				if (c==CTRL_C) break;
-				ungetc(c);
+				c=getchar();
+				if (c==CTRL_C){
+					longjmp(abort,1);
+				 }
+				ungetchar(c);
 			}
 		}
-//	}else{
-//		print_error();
-//	}
 }
 
 void main(){
@@ -545,7 +527,7 @@ void main(){
 	timer4_init();
 	interrupts();
 	enable_uart(B115200);
-	print_prompt();
+	puts(prompt);
 	_ledoff();
 	while (1){
 		count=ureadln(tib,TIB_SIZE-1);
@@ -556,15 +538,15 @@ void main(){
 		while (csp<CSTK_SIZE)ctrl_stack[csp++]=0;
 		csp=-1;
 		asp=-1;
-		eval();
+		if (!setjmp(abort)){eval();}
 		if (asp>-1){
-			uprint("s: ");
+			printf("s: ");
 			while (asp>-1){
-				uprint_int(arg_stack[asp--]);
-				uputc(' ');
+				printf("%d ",arg_stack[asp--]);
 			}
 		}
-		uprint(" ok\n");
+		puts(" ok");
 	}
 }
+
 

@@ -2,6 +2,7 @@
 *  USART communication demo
 */
 
+#include <stdio.h>
 #include "../inc/discovery.h"
 
 
@@ -12,18 +13,18 @@ static const char prompt[]="READY\n";
 void print_prompt(){
 	char *p;
 	p=prompt;
-	while (*p) uputc(*p++);
+	while (*p) putchar(*p++);
 }
 
 void print_error(){
 	char *p;
 	_ledon();
 	p=error_msg;
-	while (*p) uputc(*p++);
+	while (*p) putchar(*p++);
 }
 
 inline void echo(char c){
-	uputc(c);
+	putchar(c);
 }
 
 void main(){
@@ -33,14 +34,14 @@ void main(){
 	print_prompt();
 	_ledoff();
 	while (1){
-		c=ugetc();
+		c=getchar();
 		switch (c){
 		case -1:
 			print_error();
 			break;
 		case '\n':
 		case '\r':
-			uputc('\n');
+			putchar('\n');
 			break;
 		case 'p':
 			print_prompt();
@@ -52,3 +53,4 @@ void main(){
 	}
  
 }
+
