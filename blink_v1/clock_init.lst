@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Fri Apr  5 12:37:21 2019
+                                      4 ; This file was generated Sat Apr 27 13:44:48 2019
                                       5 ;--------------------------------------------------------
                                       6 	.module clock_init
                                       7 	.optsdcc -mstm8
@@ -48,12 +48,12 @@
       000003 F6               [ 1]   48 	ld	a, (x)
       000004 AA 02            [ 1]   49 	or	a, #0x02
       000006 F7               [ 1]   50 	ld	(x), a
-                                     51 ;	../hal/clock_init.c: 12: CLK_SWR=CLK_SWR_HSE;
+                                     51 ;	../hal/clock_init.c: 11: CLK_SWR=CLK_SWR_HSE;
       000007 35 B4 50 C4      [ 1]   52 	mov	0x50c4+0, #0xb4
-                                     53 ;	../hal/clock_init.c: 15: if (wait){
+                                     53 ;	../hal/clock_init.c: 12: if (wait){
       00000B 1E 03            [ 2]   54 	ldw	x, (0x03, sp)
       00000D 27 08            [ 1]   55 	jreq	00106$
-                                     56 ;	../hal/clock_init.c: 16: while (CLK_CMSR!=CLK_SWR_HSE);
+                                     56 ;	../hal/clock_init.c: 13: while (CLK_CMSR!=CLK_SWR_HSE);
       00000F                         57 00101$:
       00000F AE 50 C3         [ 2]   58 	ldw	x, #0x50c3
       000012 F6               [ 1]   59 	ld	a, (x)

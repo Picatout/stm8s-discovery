@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-; This file was generated Fri Apr  5 12:37:21 2019
+; This file was generated Sat Apr 27 13:44:48 2019
 ;--------------------------------------------------------
 	.module gpio
 	.optsdcc -mstm8
@@ -52,25 +52,25 @@ _set_pin_mode:
 	call	__mulint
 	addw	sp, #4
 	addw	x, #0x5000
-	ldw	(0x05, sp), x
+	ldw	(0x03, sp), x
 ;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
-	ldw	x, (0x05, sp)
+	ldw	x, (0x03, sp)
 	incw	x
 	incw	x
 ;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
 	ld	a, (0x0f, sp)
 	cpl	a
-	ld	(0x09, sp), a
+	ld	(0x07, sp), a
 ;	../hal/gpio.c: 10: if (mode&4){
 	ld	a, (0x11, sp)
 	bcp	a, #0x04
 	jreq	00102$
 ;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
 	ld	a, (x)
-	clr	(0x07, sp)
+	clr	(0x05, sp)
 	or	a, (0x0f, sp)
 	ld	yh, a
-	ld	a, (0x07, sp)
+	ld	a, (0x05, sp)
 	or	a, (0x0e, sp)
 	ld	a, yh
 	ld	(x), a
@@ -78,7 +78,7 @@ _set_pin_mode:
 00102$:
 ;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
 	ld	a, (x)
-	and	a, (0x09, sp)
+	and	a, (0x07, sp)
 	ld	(x), a
 00103$:
 ;	../hal/gpio.c: 15: switch(mode){
@@ -92,12 +92,12 @@ _set_pin_mode:
 	jp	00113$
 00129$:
 ;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
-	ldw	y, (0x05, sp)
+	ldw	y, (0x03, sp)
 	addw	y, #0x0003
 ;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
-	ldw	x, (0x05, sp)
+	ldw	x, (0x03, sp)
 	addw	x, #0x0004
-	ldw	(0x03, sp), x
+	ldw	(0x08, sp), x
 ;	../hal/gpio.c: 15: switch(mode){
 	ldw	x, (0x10, sp)
 	sllw	x
@@ -118,13 +118,13 @@ _set_pin_mode:
 00105$:
 ;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
 	ld	a, (y)
-	and	a, (0x09, sp)
+	and	a, (0x07, sp)
 	ld	(y), a
 ;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	a, (x)
-	and	a, (0x09, sp)
-	ldw	x, (0x03, sp)
+	and	a, (0x07, sp)
+	ldw	x, (0x08, sp)
 	ld	(x), a
 ;	../hal/gpio.c: 20: break;
 	jra	00113$
@@ -134,10 +134,10 @@ _set_pin_mode:
 00107$:
 ;	../hal/gpio.c: 23: _clrbit(gpio->cr1,pin);
 	ld	a, (y)
-	and	a, (0x09, sp)
+	and	a, (0x07, sp)
 	ld	(y), a
 ;	../hal/gpio.c: 24: _setbit(gpio->cr2,pin);
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	a, (x)
 	ld	xh, a
 	clr	a
@@ -145,7 +145,7 @@ _set_pin_mode:
 	rlwa	x
 	or	a, (0x0f, sp)
 	ld	xh, a
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	(x), a
 ;	../hal/gpio.c: 25: break;
 	jra	00113$
@@ -163,10 +163,10 @@ _set_pin_mode:
 	ld	xh, a
 	ld	(y), a
 ;	../hal/gpio.c: 29: _clrbit(gpio->cr2,pin);
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	a, (x)
-	and	a, (0x09, sp)
-	ldw	x, (0x03, sp)
+	and	a, (0x07, sp)
+	ldw	x, (0x08, sp)
 	ld	(x), a
 ;	../hal/gpio.c: 30: break;
 	jra	00113$
@@ -184,7 +184,7 @@ _set_pin_mode:
 	ld	xh, a
 	ld	(y), a
 ;	../hal/gpio.c: 34: _setbit(gpio->cr2,pin);
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	a, (x)
 	ld	xh, a
 	clr	a
@@ -192,7 +192,7 @@ _set_pin_mode:
 	rlwa	x
 	or	a, (0x0f, sp)
 	ld	xh, a
-	ldw	x, (0x03, sp)
+	ldw	x, (0x08, sp)
 	ld	(x), a
 ;	../hal/gpio.c: 36: }
 00113$:

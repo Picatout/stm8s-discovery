@@ -1,8 +1,6 @@
 ###########################################################
-# makefile for blink_v1
-# adapted from https://github.stm8s_mon/erno-szabados/sdcc-stm8s
+# makefile for mona
 ###########################################################
-TARGET=stm8eForth.ihx
 
 BOARD=stm8s105c6
 PROGRAMMER=stlink
@@ -16,11 +14,12 @@ FLASH=stm8flash
 INC=../inc/
 INCLUDES=$(INC)stm8s105.inc
 BUILD=build/
-OBJECTS=$(BUILD)stm8eForth.rel
+OBJECTS=$(BUILD)mona.rel
 SYMBOLS=$(OBJECTS:.rel=.sym)
 ASMS=$(OBJECTS:.rel=.asm)
 LISTS=$(OBJECTS:.rel=.lst)
 RSTS=$(OBJECTS:.rel=.rst)
+TARGET=$(BUILD)mona.ihx
 MAP=$(TARGET:.ihx=.map)
 LK=$(TARGET:.ihx=.lk)
 CDB=$(TARGET:.ihx=.cdb)
@@ -36,13 +35,13 @@ flash: $(TARGET)
 	@echo "***************"
 	$(FLASH) -c $(PROGRAMMER) -p $(BOARD) -w $(TARGET)
 
-%.rel: stm8eForth.asm
+%.rel: mona.asm  $(INC)stm8s105.inc
 	@echo
 	@echo "***************"
-	@echo "stm8ef assembling"
+	@echo "   assembling  "
 	@echo "***************"
-	$(SDAS) -o stm8eForth.rel stm8eForth.asm 
-
+	$(SDAS) -g -l -o $(BUILD)mona.rel mona.asm 
+	
 $(TARGET): $(OBJECTS) $(INCLUDES)
 	@echo
 	@echo "***************"
@@ -51,9 +50,6 @@ $(TARGET): $(OBJECTS) $(INCLUDES)
 	$(SDCC) -mstm8 -lstm8 $(LDFLAGS) -o $@ $(OBJECTS) 
 	@ls -gG $(TARGET)
 	
-test: 
-	$(SDAS) -l -o test.rel test.asm
-
     	
 clean:
 	@echo

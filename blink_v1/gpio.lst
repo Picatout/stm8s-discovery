@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Fri Apr  5 12:37:21 2019
+                                      4 ; This file was generated Sat Apr 27 13:44:48 2019
                                       5 ;--------------------------------------------------------
                                       6 	.module gpio
                                       7 	.optsdcc -mstm8
@@ -52,25 +52,25 @@
       000009 CDr00r00         [ 4]   52 	call	__mulint
       00000C 5B 04            [ 2]   53 	addw	sp, #4
       00000E 1C 50 00         [ 2]   54 	addw	x, #0x5000
-      000011 1F 05            [ 2]   55 	ldw	(0x05, sp), x
+      000011 1F 03            [ 2]   55 	ldw	(0x03, sp), x
                                      56 ;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
-      000013 1E 05            [ 2]   57 	ldw	x, (0x05, sp)
+      000013 1E 03            [ 2]   57 	ldw	x, (0x03, sp)
       000015 5C               [ 2]   58 	incw	x
       000016 5C               [ 2]   59 	incw	x
                                      60 ;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
       000017 7B 0F            [ 1]   61 	ld	a, (0x0f, sp)
       000019 43               [ 1]   62 	cpl	a
-      00001A 6B 09            [ 1]   63 	ld	(0x09, sp), a
+      00001A 6B 07            [ 1]   63 	ld	(0x07, sp), a
                                      64 ;	../hal/gpio.c: 10: if (mode&4){
       00001C 7B 11            [ 1]   65 	ld	a, (0x11, sp)
       00001E A5 04            [ 1]   66 	bcp	a, #0x04
       000020 27 10            [ 1]   67 	jreq	00102$
                                      68 ;	../hal/gpio.c: 11: _setbit(gpio->ddr,pin);
       000022 F6               [ 1]   69 	ld	a, (x)
-      000023 0F 07            [ 1]   70 	clr	(0x07, sp)
+      000023 0F 05            [ 1]   70 	clr	(0x05, sp)
       000025 1A 0F            [ 1]   71 	or	a, (0x0f, sp)
       000027 90 95            [ 1]   72 	ld	yh, a
-      000029 7B 07            [ 1]   73 	ld	a, (0x07, sp)
+      000029 7B 05            [ 1]   73 	ld	a, (0x05, sp)
       00002B 1A 0E            [ 1]   74 	or	a, (0x0e, sp)
       00002D 90 9E            [ 1]   75 	ld	a, yh
       00002F F7               [ 1]   76 	ld	(x), a
@@ -78,7 +78,7 @@
       000032                         78 00102$:
                                      79 ;	../hal/gpio.c: 13: _clrbit(gpio->ddr,pin);
       000032 F6               [ 1]   80 	ld	a, (x)
-      000033 14 09            [ 1]   81 	and	a, (0x09, sp)
+      000033 14 07            [ 1]   81 	and	a, (0x07, sp)
       000035 F7               [ 1]   82 	ld	(x), a
       000036                         83 00103$:
                                      84 ;	../hal/gpio.c: 15: switch(mode){
@@ -92,12 +92,12 @@
       000044 CCr00rC1         [ 2]   92 	jp	00113$
       000047                         93 00129$:
                                      94 ;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
-      000047 16 05            [ 2]   95 	ldw	y, (0x05, sp)
+      000047 16 03            [ 2]   95 	ldw	y, (0x03, sp)
       000049 72 A9 00 03      [ 2]   96 	addw	y, #0x0003
                                      97 ;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
-      00004D 1E 05            [ 2]   98 	ldw	x, (0x05, sp)
+      00004D 1E 03            [ 2]   98 	ldw	x, (0x03, sp)
       00004F 1C 00 04         [ 2]   99 	addw	x, #0x0004
-      000052 1F 03            [ 2]  100 	ldw	(0x03, sp), x
+      000052 1F 08            [ 2]  100 	ldw	(0x08, sp), x
                                     101 ;	../hal/gpio.c: 15: switch(mode){
       000054 1E 10            [ 2]  102 	ldw	x, (0x10, sp)
       000056 58               [ 2]  103 	sllw	x
@@ -118,13 +118,13 @@
       00006B                        118 00105$:
                                     119 ;	../hal/gpio.c: 18: _clrbit(gpio->cr1,pin);
       00006B 90 F6            [ 1]  120 	ld	a, (y)
-      00006D 14 09            [ 1]  121 	and	a, (0x09, sp)
+      00006D 14 07            [ 1]  121 	and	a, (0x07, sp)
       00006F 90 F7            [ 1]  122 	ld	(y), a
                                     123 ;	../hal/gpio.c: 19: _clrbit(gpio->cr2,pin);
-      000071 1E 03            [ 2]  124 	ldw	x, (0x03, sp)
+      000071 1E 08            [ 2]  124 	ldw	x, (0x08, sp)
       000073 F6               [ 1]  125 	ld	a, (x)
-      000074 14 09            [ 1]  126 	and	a, (0x09, sp)
-      000076 1E 03            [ 2]  127 	ldw	x, (0x03, sp)
+      000074 14 07            [ 1]  126 	and	a, (0x07, sp)
+      000076 1E 08            [ 2]  127 	ldw	x, (0x08, sp)
       000078 F7               [ 1]  128 	ld	(x), a
                                     129 ;	../hal/gpio.c: 20: break;
       000079 20 46            [ 2]  130 	jra	00113$
@@ -134,10 +134,10 @@
       00007B                        134 00107$:
                                     135 ;	../hal/gpio.c: 23: _clrbit(gpio->cr1,pin);
       00007B 90 F6            [ 1]  136 	ld	a, (y)
-      00007D 14 09            [ 1]  137 	and	a, (0x09, sp)
+      00007D 14 07            [ 1]  137 	and	a, (0x07, sp)
       00007F 90 F7            [ 1]  138 	ld	(y), a
                                     139 ;	../hal/gpio.c: 24: _setbit(gpio->cr2,pin);
-      000081 1E 03            [ 2]  140 	ldw	x, (0x03, sp)
+      000081 1E 08            [ 2]  140 	ldw	x, (0x08, sp)
       000083 F6               [ 1]  141 	ld	a, (x)
       000084 95               [ 1]  142 	ld	xh, a
       000085 4F               [ 1]  143 	clr	a
@@ -145,7 +145,7 @@
       000088 02               [ 1]  145 	rlwa	x
       000089 1A 0F            [ 1]  146 	or	a, (0x0f, sp)
       00008B 95               [ 1]  147 	ld	xh, a
-      00008C 1E 03            [ 2]  148 	ldw	x, (0x03, sp)
+      00008C 1E 08            [ 2]  148 	ldw	x, (0x08, sp)
       00008E F7               [ 1]  149 	ld	(x), a
                                     150 ;	../hal/gpio.c: 25: break;
       00008F 20 30            [ 2]  151 	jra	00113$
@@ -163,10 +163,10 @@
       00009A 95               [ 1]  163 	ld	xh, a
       00009B 90 F7            [ 1]  164 	ld	(y), a
                                     165 ;	../hal/gpio.c: 29: _clrbit(gpio->cr2,pin);
-      00009D 1E 03            [ 2]  166 	ldw	x, (0x03, sp)
+      00009D 1E 08            [ 2]  166 	ldw	x, (0x08, sp)
       00009F F6               [ 1]  167 	ld	a, (x)
-      0000A0 14 09            [ 1]  168 	and	a, (0x09, sp)
-      0000A2 1E 03            [ 2]  169 	ldw	x, (0x03, sp)
+      0000A0 14 07            [ 1]  168 	and	a, (0x07, sp)
+      0000A2 1E 08            [ 2]  169 	ldw	x, (0x08, sp)
       0000A4 F7               [ 1]  170 	ld	(x), a
                                     171 ;	../hal/gpio.c: 30: break;
       0000A5 20 1A            [ 2]  172 	jra	00113$
@@ -184,7 +184,7 @@
       0000B0 95               [ 1]  184 	ld	xh, a
       0000B1 90 F7            [ 1]  185 	ld	(y), a
                                     186 ;	../hal/gpio.c: 34: _setbit(gpio->cr2,pin);
-      0000B3 1E 03            [ 2]  187 	ldw	x, (0x03, sp)
+      0000B3 1E 08            [ 2]  187 	ldw	x, (0x08, sp)
       0000B5 F6               [ 1]  188 	ld	a, (x)
       0000B6 95               [ 1]  189 	ld	xh, a
       0000B7 4F               [ 1]  190 	clr	a
@@ -192,7 +192,7 @@
       0000BA 02               [ 1]  192 	rlwa	x
       0000BB 1A 0F            [ 1]  193 	or	a, (0x0f, sp)
       0000BD 95               [ 1]  194 	ld	xh, a
-      0000BE 1E 03            [ 2]  195 	ldw	x, (0x03, sp)
+      0000BE 1E 08            [ 2]  195 	ldw	x, (0x08, sp)
       0000C0 F7               [ 1]  196 	ld	(x), a
                                     197 ;	../hal/gpio.c: 36: }
       0000C1                        198 00113$:

@@ -7,14 +7,14 @@
 ;;;;;;;;;;
 ; bit mask
 ;;;;;;;;;;
- BIT0 = (1<<0)
- BIT1 = (1<<1)
- BIT2 = (1<<2)
- BIT3 = (1<<3)
- BIT4 = (1<<4)
- BIT5 = (1<<5)
- BIT6 = (1<<6)
- BIT7 = (1<<7)
+ BIT0 = (0)
+ BIT1 = (1)
+ BIT2 = (2)
+ BIT3 = (3)
+ BIT4 = (4)
+ BIT5 = (5)
+ BIT6 = (6)
+ BIT7 = (7)
 
 ; stm8s-discovery HSE clock frequency
  Fmaster = 16000000;UL
@@ -95,11 +95,6 @@ X6_FLASH_SIZE = (32768)
  CLKOPT_CKAWUSEL = BIT2
  CLKOPT_PRS_C1   = BIT1
  CLKOPT_PRS_C0   = BIT0
-; NCLKOPT bits
- NCLKOPT_NEXT_CLK  = ~BIT3
- NCLKOPT_NCKAWUSEL = ~BIT2
- NCLKOPT_NPRS_C1   = ~BIT1
- NCLKOPT_NPRS_C0   = ~BIT0
 
 ; AFR option, remapable functions
  AFR7_BEEP    = BIT7
@@ -110,16 +105,6 @@ X6_FLASH_SIZE = (32768)
  AFR2_CCO     = BIT2
  AFR1_TIM2    = BIT1
  AFR0_ADC     = BIT0
-; NAFR option, remapable functions
- NAFR7_NBEEP  =  ~BIT7
- NAFR6_NI2C   =  ~BIT6
- NAFR5_NTIM1  =  ~BIT5
- NAFR4_NTIM1  =  ~BIT4
- NAFR3_NTIM1  =  ~BIT3
- NAFR2_NCCO   =  ~BIT2
- NAFR1_NTIM2  =  ~BIT1
- NAFR0_NADC   =  ~BIT0
- 
 
 ; device ID = (read only)
  DEVID_XL  = (0x48CD)
@@ -136,15 +121,15 @@ X6_FLASH_SIZE = (32768)
  DEVID_LOT6  = (0x48D8)
 
 
-; port bit mask
- PIN0 = (1<<0)
- PIN1 = (1<<1)
- PIN2 = (1<<2)
- PIN3 = (1<<3)
- PIN4 = (1<<4)
- PIN5 = (1<<5)
- PIN6 = (1<<6)
- PIN7 = (1<<7)
+; port bit
+ PIN0 = (0)
+ PIN1 = (1)
+ PIN2 = (2)
+ PIN3 = (3)
+ PIN4 = (4)
+ PIN5 = (5)
+ PIN6 = (6)
+ PIN7 = (7)
 
 GPIO_BASE = (0x5000)
 GPIO_SIZE = (5)
@@ -212,17 +197,6 @@ PG = 30
 ; output speed CR2
  OUTPUT_SLOW = (0)
  OUTPUT_FAST = (1)
-; combined bits for configuration
-; input, bit 0 -> input type, bit 1 -> interrupt
- INPUT_FLOAT_DI = (0)
- INPUT_FLOAT_EI = (2)
- INPUT_PU_DI = (1)
- INPUT_PU_EI = (3)
-; output, bit 0 -> type, bit 1 -> speed
- OUTPUT_OD_SLOW = (0+4)
- OUTPUT_OD_FAST = (2+4)
- OUTPUT_PP_SLOW = (1+4)
- OUTPUT_PP_FAST = (3+4)
 
 
 ; Flash
@@ -251,12 +225,6 @@ PG = 30
  FLASH_CR2_ERASE = BIT5
  FLASH_CR2_FPRG = BIT4
  FLASH_CR2_PRG = BIT0
-; FLASH_NCR2 bits
- FLASH_NCR2_NOPT = ~BIT7
- FLASH_NCR2_NWPRG = ~BIT6
- FLASH_NCR2_NERASE = ~BIT5
- FLASH_NCR2_NFPRG = ~BIT4
- FLASH_NCR2_NPRG = ~BIT0
 ; FLASH_FPR bits
  FLASH_FPR_WPB5 = BIT5
  FLASH_FPR_WPB4 = BIT4
@@ -301,27 +269,27 @@ PG = 30
 
 ; Peripherals clock gating
 ; CLK_PCKENR1 
- CLK_PCKENR1_TIM1 = (1<<7)
- CLK_PCKENR1_TIM3 = (1<<6)
- CLK_PCKENR1_TIM2 = (1<<5)
- CLK_PCKENR1_TIM4 = (1<<4)
- CLK_PCKENR1_UART2 = (1<<3)
- CLK_PCKENR1_SPI = (1<<1)
- CLK_PCKENR1_I2C = (1<<0)
+ CLK_PCKENR1_TIM1 = (7)
+ CLK_PCKENR1_TIM3 = (6)
+ CLK_PCKENR1_TIM2 = (5)
+ CLK_PCKENR1_TIM4 = (4)
+ CLK_PCKENR1_UART2 = (3)
+ CLK_PCKENR1_SPI = (1)
+ CLK_PCKENR1_I2C = (0)
 ; CLK_PCKENR2
- CLK_PCKENR2_ADC = (1<<3)
- CLK_PCKENR2_AWU = (1<<2)
+ CLK_PCKENR2_ADC = (3)
+ CLK_PCKENR2_AWU = (2)
 
-; Clock bitmasks
- CLK_ICKR_REGAH = (1 << 5)
- CLK_ICKR_LSIRDY = (1 << 4)
- CLK_ICKR_LSIEN = (1 << 3)
- CLK_ICKR_FHW = (1 << 2)
- CLK_ICKR_HSIRDY = (1 << 1)
- CLK_ICKR_HSIEN = (1 << 0)
+; Clock bits
+ CLK_ICKR_REGAH = (5)
+ CLK_ICKR_LSIRDY = (4)
+ CLK_ICKR_LSIEN = (3)
+ CLK_ICKR_FHW = (2)
+ CLK_ICKR_HSIRDY = (1)
+ CLK_ICKR_HSIEN = (0)
 
- CLK_ECKR_HSERDY = (1 << 1)
- CLK_ECKR_HSEEN = (1 << 0)
+ CLK_ECKR_HSERDY = (1)
+ CLK_ECKR_HSEEN = (0)
 ; clock source
  CLK_SWR_HSI = 0xE1
  CLK_SWR_LSI = 0xD2
@@ -332,11 +300,11 @@ PG = 30
  CLK_SWCR_SWEN = (1)
  CLK_SWCR_SWBSY = (0)
 
- CLK_CKDIVR_HSIDIV1 = (1 << 4)
- CLK_CKDIVR_HSIDIV0 = (1 << 3)
- CLK_CKDIVR_CPUDIV2 = (1 << 2)
- CLK_CKDIVR_CPUDIV1 = (1 << 1)
- CLK_CKDIVR_CPUDIV0 = (1 << 0)
+ CLK_CKDIVR_HSIDIV1 = (4)
+ CLK_CKDIVR_HSIDIV0 = (3)
+ CLK_CKDIVR_CPUDIV2 = (2)
+ CLK_CKDIVR_CPUDIV1 = (1)
+ CLK_CKDIVR_CPUDIV0 = (0)
 
 ; Watchdog
  WWDG_CR  = (0x50D1)
@@ -377,49 +345,49 @@ PG = 30
  I2C_TRISER  = (0x521D)
  I2C_PECR  = (0x521E)
 
- I2C_CR1_NOSTRETCH = (1 << 7)
- I2C_CR1_ENGC = (1 << 6)
- I2C_CR1_PE = (1 << 0)
+ I2C_CR1_NOSTRETCH = (7)
+ I2C_CR1_ENGC = (6)
+ I2C_CR1_PE = (0)
 
- I2C_CR2_SWRST = (1 << 7)
- I2C_CR2_POS = (1 << 3)
- I2C_CR2_ACK = (1 << 2)
- I2C_CR2_STOP = (1 << 1)
- I2C_CR2_START = (1 << 0)
+ I2C_CR2_SWRST = (7)
+ I2C_CR2_POS = (3)
+ I2C_CR2_ACK = (2)
+ I2C_CR2_STOP = (1)
+ I2C_CR2_START = (0)
 
- I2C_OARL_ADD0 = (1 << 0)
+ I2C_OARL_ADD0 = (0)
 
  I2C_OAR_ADDR_7BIT = ((I2C_OARL & 0xFE) >> 1)
  I2C_OAR_ADDR_10BIT = (((I2C_OARH & 0x06) << 9) | (I2C_OARL & 0xFF))
 
- I2C_OARH_ADDMODE = (1 << 7)
- I2C_OARH_ADDCONF = (1 << 6)
- I2C_OARH_ADD9 = (1 << 2)
- I2C_OARH_ADD8 = (1 << 1)
+ I2C_OARH_ADDMODE = (7)
+ I2C_OARH_ADDCONF = (6)
+ I2C_OARH_ADD9 = (2)
+ I2C_OARH_ADD8 = (1)
 
- I2C_SR1_TXE = (1 << 7)
- I2C_SR1_RXNE = (1 << 6)
- I2C_SR1_STOPF = (1 << 4)
- I2C_SR1_ADD10 = (1 << 3)
- I2C_SR1_BTF = (1 << 2)
- I2C_SR1_ADDR = (1 << 1)
- I2C_SR1_SB = (1 << 0)
+ I2C_SR1_TXE = (7)
+ I2C_SR1_RXNE = (6)
+ I2C_SR1_STOPF = (4)
+ I2C_SR1_ADD10 = (3)
+ I2C_SR1_BTF = (2)
+ I2C_SR1_ADDR = (1)
+ I2C_SR1_SB = (0)
 
- I2C_SR2_WUFH = (1 << 5)
- I2C_SR2_OVR = (1 << 3)
- I2C_SR2_AF = (1 << 2)
- I2C_SR2_ARLO = (1 << 1)
- I2C_SR2_BERR = (1 << 0)
+ I2C_SR2_WUFH = (5)
+ I2C_SR2_OVR = (3)
+ I2C_SR2_AF = (2)
+ I2C_SR2_ARLO = (1)
+ I2C_SR2_BERR = (0)
 
- I2C_SR3_DUALF = (1 << 7)
- I2C_SR3_GENCALL = (1 << 4)
- I2C_SR3_TRA = (1 << 2)
- I2C_SR3_BUSY = (1 << 1)
- I2C_SR3_MSL = (1 << 0)
+ I2C_SR3_DUALF = (7)
+ I2C_SR3_GENCALL = (4)
+ I2C_SR3_TRA = (2)
+ I2C_SR3_BUSY = (1)
+ I2C_SR3_MSL = (0)
 
- I2C_ITR_ITBUFEN = (1 << 2)
- I2C_ITR_ITEVTEN = (1 << 1)
- I2C_ITR_ITERREN = (1 << 0)
+ I2C_ITR_ITBUFEN = (2)
+ I2C_ITR_ITEVTEN = (1)
+ I2C_ITR_ITERREN = (0)
 
 ; Precalculated values, all in KHz
  I2C_CCRH_16MHZ_FAST_400 = 0x80
@@ -486,55 +454,55 @@ B921600=9
  UART2_PSCR  = (0x524B)
 
 ; UART Status Register bits
- UART_SR_TXE = (1 << 7)
- UART_SR_TC = (1 << 6)
- UART_SR_RXNE = (1 << 5)
- UART_SR_IDLE = (1 << 4)
- UART_SR_OR = (1 << 3)
- UART_SR_NF = (1 << 2)
- UART_SR_FE = (1 << 1)
- UART_SR_PE = (1 << 0)
+ UART_SR_TXE = (7)
+ UART_SR_TC = (6)
+ UART_SR_RXNE = (5)
+ UART_SR_IDLE = (4)
+ UART_SR_OR = (3)
+ UART_SR_NF = (2)
+ UART_SR_FE = (1)
+ UART_SR_PE = (0)
 
 ; Uart Control Register bits
- UART_CR1_R8 = (1 << 7)
- UART_CR1_T8 = (1 << 6)
- UART_CR1_UARTD = (1 << 5)
- UART_CR1_M = (1 << 4)
- UART_CR1_WAKE = (1 << 3)
- UART_CR1_PCEN = (1 << 2)
- UART_CR1_PS = (1 << 1)
- UART_CR1_PIEN = (1 << 0)
+ UART_CR1_R8 = (7)
+ UART_CR1_T8 = (6)
+ UART_CR1_UARTD = (5)
+ UART_CR1_M = (4)
+ UART_CR1_WAKE = (3)
+ UART_CR1_PCEN = (2)
+ UART_CR1_PS = (1)
+ UART_CR1_PIEN = (0)
 
- UART_CR2_TIEN = (1 << 7)
- UART_CR2_TCIEN = (1 << 6)
- UART_CR2_RIEN = (1 << 5)
- UART_CR2_ILIEN = (1 << 4)
- UART_CR2_TEN = (1 << 3)
- UART_CR2_REN = (1 << 2)
- UART_CR2_RWU = (1 << 1)
- UART_CR2_SBK = (1 << 0)
+ UART_CR2_TIEN = (7)
+ UART_CR2_TCIEN = (6)
+ UART_CR2_RIEN = (5)
+ UART_CR2_ILIEN = (4)
+ UART_CR2_TEN = (3)
+ UART_CR2_REN = (2)
+ UART_CR2_RWU = (1)
+ UART_CR2_SBK = (0)
 
- UART_CR3_LINEN = (1 << 6)
- UART_CR3_STOP1 = (1 << 5)
- UART_CR3_STOP0 = (1 << 4)
- UART_CR3_CLKEN = (1 << 3)
- UART_CR3_CPOL = (1 << 2)
- UART_CR3_CPHA = (1 << 1)
- UART_CR3_LBCL = (1 << 0)
+ UART_CR3_LINEN = (6)
+ UART_CR3_STOP1 = (5)
+ UART_CR3_STOP0 = (4)
+ UART_CR3_CLKEN = (3)
+ UART_CR3_CPOL = (2)
+ UART_CR3_CPHA = (1)
+ UART_CR3_LBCL = (0)
 
- UART_CR4_LBDIEN = (1 << 6)
- UART_CR4_LBDL = (1 << 5)
- UART_CR4_LBDF = (1 << 4)
- UART_CR4_ADD3 = (1 << 3)
- UART_CR4_ADD2 = (1 << 2)
- UART_CR4_ADD1 = (1 << 1)
- UART_CR4_ADD0 = (1 << 0)
+ UART_CR4_LBDIEN = (6)
+ UART_CR4_LBDL = (5)
+ UART_CR4_LBDF = (4)
+ UART_CR4_ADD3 = (3)
+ UART_CR4_ADD2 = (2)
+ UART_CR4_ADD1 = (1)
+ UART_CR4_ADD0 = (0)
 
- UART_CR5_SCEN = (1 << 5)
- UART_CR5_NACK = (1 << 4)
- UART_CR5_HDSEL = (1 << 3)
- UART_CR5_IRLP = (1 << 2)
- UART_CR5_IREN = (1 << 1)
+ UART_CR5_SCEN = (5)
+ UART_CR5_NACK = (4)
+ UART_CR5_HDSEL = (3)
+ UART_CR5_IRLP = (2)
+ UART_CR5_IREN = (1)
 
 ; TIMERS
 ; Timer 1 - 16-bit timer with complementary PWM outputs
@@ -572,154 +540,154 @@ B921600=9
  TIM1_OISR  = (0x526F)
 
 ; Timer Control Register bits
- TIM_CR1_ARPE = (1 << 7)
- TIM_CR1_CMSH = (1 << 6)
- TIM_CR1_CMSL = (1 << 5)
- TIM_CR1_DIR = (1 << 4)
- TIM_CR1_OPM = (1 << 3)
- TIM_CR1_URS = (1 << 2)
- TIM_CR1_UDIS = (1 << 1)
- TIM_CR1_CEN = (1 << 0)
+ TIM_CR1_ARPE = (7)
+ TIM_CR1_CMSH = (6)
+ TIM_CR1_CMSL = (5)
+ TIM_CR1_DIR = (4)
+ TIM_CR1_OPM = (3)
+ TIM_CR1_URS = (2)
+ TIM_CR1_UDIS = (1)
+ TIM_CR1_CEN = (0)
 
- TIM1_CR2_MMS2 = (1 << 6)
- TIM1_CR2_MMS1 = (1 << 5)
- TIM1_CR2_MMS0 = (1 << 4)
- TIM1_CR2_COMS = (1 << 2)
- TIM1_CR2_CCPC = (1 << 0)
+ TIM1_CR2_MMS2 = (6)
+ TIM1_CR2_MMS1 = (5)
+ TIM1_CR2_MMS0 = (4)
+ TIM1_CR2_COMS = (2)
+ TIM1_CR2_CCPC = (0)
 
 ; Timer Slave Mode Control bits
- TIM1_SMCR_MSM = (1 << 7)
- TIM1_SMCR_TS2 = (1 << 6)
- TIM1_SMCR_TS1 = (1 << 5)
- TIM1_SMCR_TS0 = (1 << 4)
- TIM1_SMCR_SMS2 = (1 << 2)
- TIM1_SMCR_SMS1 = (1 << 1)
- TIM1_SMCR_SMS0 = (1 << 0)
+ TIM1_SMCR_MSM = (7)
+ TIM1_SMCR_TS2 = (6)
+ TIM1_SMCR_TS1 = (5)
+ TIM1_SMCR_TS0 = (4)
+ TIM1_SMCR_SMS2 = (2)
+ TIM1_SMCR_SMS1 = (1)
+ TIM1_SMCR_SMS0 = (0)
 
 ; Timer External Trigger Enable bits
- TIM1_ETR_ETP = (1 << 7)
- TIM1_ETR_ECE = (1 << 6)
- TIM1_ETR_ETPS1 = (1 << 5)
- TIM1_ETR_ETPS0 = (1 << 4)
- TIM1_ETR_ETF3 = (1 << 3)
- TIM1_ETR_ETF2 = (1 << 2)
- TIM1_ETR_ETF1 = (1 << 1)
- TIM1_ETR_ETF0 = (1 << 0)
+ TIM1_ETR_ETP = (7)
+ TIM1_ETR_ECE = (6)
+ TIM1_ETR_ETPS1 = (5)
+ TIM1_ETR_ETPS0 = (4)
+ TIM1_ETR_ETF3 = (3)
+ TIM1_ETR_ETF2 = (2)
+ TIM1_ETR_ETF1 = (1)
+ TIM1_ETR_ETF0 = (0)
 
 ; Timer Interrupt Enable bits
- TIM1_IER_BIE = (1 << 7)
- TIM1_IER_TIE = (1 << 6)
- TIM1_IER_COMIE = (1 << 5)
- TIM1_IER_CC4IE = (1 << 4)
- TIM1_IER_CC3IE = (1 << 3)
- TIM1_IER_CC2IE = (1 << 2)
- TIM1_IER_CC1IE = (1 << 1)
- TIM1_IER_UIE = (1 << 0)
+ TIM1_IER_BIE = (7)
+ TIM1_IER_TIE = (6)
+ TIM1_IER_COMIE = (5)
+ TIM1_IER_CC4IE = (4)
+ TIM1_IER_CC3IE = (3)
+ TIM1_IER_CC2IE = (2)
+ TIM1_IER_CC1IE = (1)
+ TIM1_IER_UIE = (0)
 
 ; Timer Status Register bits
- TIM1_SR1_BIF = (1 << 7)
- TIM1_SR1_TIF = (1 << 6)
- TIM1_SR1_COMIF = (1 << 5)
- TIM1_SR1_CC4IF = (1 << 4)
- TIM1_SR1_CC3IF = (1 << 3)
- TIM1_SR1_CC2IF = (1 << 2)
- TIM1_SR1_CC1IF = (1 << 1)
- TIM1_SR1_UIF = (1 << 0)
+ TIM1_SR1_BIF = (7)
+ TIM1_SR1_TIF = (6)
+ TIM1_SR1_COMIF = (5)
+ TIM1_SR1_CC4IF = (4)
+ TIM1_SR1_CC3IF = (3)
+ TIM1_SR1_CC2IF = (2)
+ TIM1_SR1_CC1IF = (1)
+ TIM1_SR1_UIF = (0)
 
- TIM1_SR2_CC4OF = (1 << 4)
- TIM1_SR2_CC3OF = (1 << 3)
- TIM1_SR2_CC2OF = (1 << 2)
- TIM1_SR2_CC1OF = (1 << 1)
+ TIM1_SR2_CC4OF = (4)
+ TIM1_SR2_CC3OF = (3)
+ TIM1_SR2_CC2OF = (2)
+ TIM1_SR2_CC1OF = (1)
 
 ; Timer Event Generation Register bits
- TIM1_EGR_BG = (1 << 7)
- TIM1_EGR_TG = (1 << 6)
- TIM1_EGR_COMG = ( 1 << 5)
- TIM1_EGR_CC4G = (1 << 4)
- TIM1_EGR_CC3G = (1 << 3)
- TIM1_EGR_CC2G = (1 << 2)
- TIM1_EGR_CC1G = (1 << 1)
- TIM1_EGR_UG = (1 << 0)
+ TIM1_EGR_BG = (7)
+ TIM1_EGR_TG = (6)
+ TIM1_EGR_COMG = (5)
+ TIM1_EGR_CC4G = (4)
+ TIM1_EGR_CC3G = (3)
+ TIM1_EGR_CC2G = (2)
+ TIM1_EGR_CC1G = (1)
+ TIM1_EGR_UG = (0)
 
 ; Capture/Compare Mode Register 1 - channel configured in output
- TIM1_CCMR1_OC1CE = (1 << 7)
- TIM1_CCMR1_OC1M2 = (1 << 6)
- TIM1_CCMR1_OC1M1 = (1 << 5)
- TIM1_CCMR1_OC1M0 = (1 << 4)
- TIM1_CCMR1_OC1PE = (1 << 3)
- TIM1_CCMR1_OC1FE = (1 << 2)
- TIM1_CCMR1_CC1S1 = (1 << 1)
- TIM1_CCMR1_CC1S0 = (1 << 0)
+ TIM1_CCMR1_OC1CE = (7)
+ TIM1_CCMR1_OC1M2 = (6)
+ TIM1_CCMR1_OC1M1 = (5)
+ TIM1_CCMR1_OC1M0 = (4)
+ TIM1_CCMR1_OC1PE = (3)
+ TIM1_CCMR1_OC1FE = (2)
+ TIM1_CCMR1_CC1S1 = (1)
+ TIM1_CCMR1_CC1S0 = (0)
 
 ; Capture/Compare Mode Register 1 - channel configured in input
- TIM1_CCMR1_IC1F3 = (1 << 7)
- TIM1_CCMR1_IC1F2 = (1 << 6)
- TIM1_CCMR1_IC1F1 = (1 << 5)
- TIM1_CCMR1_IC1F0 = (1 << 4)
- TIM1_CCMR1_IC1PSC1 = (1 << 3)
- TIM1_CCMR1_IC1PSC0 = (1 << 2)
-;  TIM1_CCMR1_CC1S1 = (1 << 1)
- TIM1_CCMR1_CC1S0 = (1 << 0)
+ TIM1_CCMR1_IC1F3 = (7)
+ TIM1_CCMR1_IC1F2 = (6)
+ TIM1_CCMR1_IC1F1 = (5)
+ TIM1_CCMR1_IC1F0 = (4)
+ TIM1_CCMR1_IC1PSC1 = (3)
+ TIM1_CCMR1_IC1PSC0 = (2)
+;  TIM1_CCMR1_CC1S1 = (1)
+ TIM1_CCMR1_CC1S0 = (0)
 
 ; Capture/Compare Mode Register 2 - channel configured in output
- TIM1_CCMR2_OC2CE = (1 << 7)
- TIM1_CCMR2_OC2M2 = (1 << 6)
- TIM1_CCMR2_OC2M1 = (1 << 5)
- TIM1_CCMR2_OC2M0 = (1 << 4)
- TIM1_CCMR2_OC2PE = (1 << 3)
- TIM1_CCMR2_OC2FE = (1 << 2)
- TIM1_CCMR2_CC2S1 = (1 << 1)
- TIM1_CCMR2_CC2S0 = (1 << 0)
+ TIM1_CCMR2_OC2CE = (7)
+ TIM1_CCMR2_OC2M2 = (6)
+ TIM1_CCMR2_OC2M1 = (5)
+ TIM1_CCMR2_OC2M0 = (4)
+ TIM1_CCMR2_OC2PE = (3)
+ TIM1_CCMR2_OC2FE = (2)
+ TIM1_CCMR2_CC2S1 = (1)
+ TIM1_CCMR2_CC2S0 = (0)
 
 ; Capture/Compare Mode Register 2 - channel configured in input
- TIM1_CCMR2_IC2F3 = (1 << 7)
- TIM1_CCMR2_IC2F2 = (1 << 6)
- TIM1_CCMR2_IC2F1 = (1 << 5)
- TIM1_CCMR2_IC2F0 = (1 << 4)
- TIM1_CCMR2_IC2PSC1 = (1 << 3)
- TIM1_CCMR2_IC2PSC0 = (1 << 2)
-;  TIM1_CCMR2_CC2S1 = (1 << 1)
- TIM1_CCMR2_CC2S0 = (1 << 0)
+ TIM1_CCMR2_IC2F3 = (7)
+ TIM1_CCMR2_IC2F2 = (6)
+ TIM1_CCMR2_IC2F1 = (5)
+ TIM1_CCMR2_IC2F0 = (4)
+ TIM1_CCMR2_IC2PSC1 = (3)
+ TIM1_CCMR2_IC2PSC0 = (2)
+;  TIM1_CCMR2_CC2S1 = (1)
+ TIM1_CCMR2_CC2S0 = (0)
 
 ; Capture/Compare Mode Register 3 - channel configured in output
- TIM1_CCMR3_OC3CE = (1 << 7)
- TIM1_CCMR3_OC3M2 = (1 << 6)
- TIM1_CCMR3_OC3M1 = (1 << 5)
- TIM1_CCMR3_OC3M0 = (1 << 4)
- TIM1_CCMR3_OC3PE = (1 << 3)
- TIM1_CCMR3_OC3FE = (1 << 2)
- TIM1_CCMR3_CC3S1 = (1 << 1)
- TIM1_CCMR3_CC3S0 = (1 << 0)
+ TIM1_CCMR3_OC3CE = (7)
+ TIM1_CCMR3_OC3M2 = (6)
+ TIM1_CCMR3_OC3M1 = (5)
+ TIM1_CCMR3_OC3M0 = (4)
+ TIM1_CCMR3_OC3PE = (3)
+ TIM1_CCMR3_OC3FE = (2)
+ TIM1_CCMR3_CC3S1 = (1)
+ TIM1_CCMR3_CC3S0 = (0)
 
 ; Capture/Compare Mode Register 3 - channel configured in input
- TIM1_CCMR3_IC3F3 = (1 << 7)
- TIM1_CCMR3_IC3F2 = (1 << 6)
- TIM1_CCMR3_IC3F1 = (1 << 5)
- TIM1_CCMR3_IC3F0 = (1 << 4)
- TIM1_CCMR3_IC3PSC1 = (1 << 3)
- TIM1_CCMR3_IC3PSC0 = (1 << 2)
-;  TIM1_CCMR3_CC3S1 = (1 << 1)
- TIM1_CCMR3_CC3S0 = (1 << 0)
+ TIM1_CCMR3_IC3F3 = (7)
+ TIM1_CCMR3_IC3F2 = (6)
+ TIM1_CCMR3_IC3F1 = (5)
+ TIM1_CCMR3_IC3F0 = (4)
+ TIM1_CCMR3_IC3PSC1 = (3)
+ TIM1_CCMR3_IC3PSC0 = (2)
+;  TIM1_CCMR3_CC3S1 = (1)
+ TIM1_CCMR3_CC3S0 = (0)
 
 ; Capture/Compare Mode Register 4 - channel configured in output
- TIM1_CCMR4_OC4CE = (1 << 7)
- TIM1_CCMR4_OC4M2 = (1 << 6)
- TIM1_CCMR4_OC4M1 = (1 << 5)
- TIM1_CCMR4_OC4M0 = (1 << 4)
- TIM1_CCMR4_OC4PE = (1 << 3)
- TIM1_CCMR4_OC4FE = (1 << 2)
- TIM1_CCMR4_CC4S1 = (1 << 1)
- TIM1_CCMR4_CC4S0 = (1 << 0)
+ TIM1_CCMR4_OC4CE = (7)
+ TIM1_CCMR4_OC4M2 = (6)
+ TIM1_CCMR4_OC4M1 = (5)
+ TIM1_CCMR4_OC4M0 = (4)
+ TIM1_CCMR4_OC4PE = (3)
+ TIM1_CCMR4_OC4FE = (2)
+ TIM1_CCMR4_CC4S1 = (1)
+ TIM1_CCMR4_CC4S0 = (0)
 
 ; Capture/Compare Mode Register 4 - channel configured in input
- TIM1_CCMR4_IC4F3 = (1 << 7)
- TIM1_CCMR4_IC4F2 = (1 << 6)
- TIM1_CCMR4_IC4F1 = (1 << 5)
- TIM1_CCMR4_IC4F0 = (1 << 4)
- TIM1_CCMR4_IC4PSC1 = (1 << 3)
- TIM1_CCMR4_IC4PSC0 = (1 << 2)
-;  TIM1_CCMR4_CC4S1 = (1 << 1)
- TIM1_CCMR4_CC4S0 = (1 << 0)
+ TIM1_CCMR4_IC4F3 = (7)
+ TIM1_CCMR4_IC4F2 = (6)
+ TIM1_CCMR4_IC4F1 = (5)
+ TIM1_CCMR4_IC4F0 = (4)
+ TIM1_CCMR4_IC4PSC1 = (3)
+ TIM1_CCMR4_IC4PSC0 = (2)
+;  TIM1_CCMR4_CC4S1 = (1)
+ TIM1_CCMR4_CC4S0 = (0)
 
 ; Timer 2 - 16-bit timer
  TIM2_CR1  = (0x5300)
@@ -764,23 +732,23 @@ B921600=9
  TIM3_CCR2L  = (0x5330)
 
 ; TIM3_CR1  fields
- TIM3_CR1_CEN = (1<<0)
- TIM3_CR1_UDIS = (1<<1)
- TIM3_CR1_URS = (1<<2)
- TIM3_CR1_OPM = (1<<3)
- TIM3_CR1_ARPE = (1<<7)
+ TIM3_CR1_CEN = (0)
+ TIM3_CR1_UDIS = (1)
+ TIM3_CR1_URS = (2)
+ TIM3_CR1_OPM = (3)
+ TIM3_CR1_ARPE = (7)
 ; TIM3_CCR2  fields
  TIM3_CCMR2_CC2S_POS = (0)
  TIM3_CCMR2_OC2PE_POS = (3)
  TIM3_CCMR2_OC2M_POS = (4)  
 ; TIM3_CCER1 fields
- TIM3_CCER1_CC1E = (1<<0)
- TIM3_CCER1_CC1P = (1<<1)
- TIM3_CCER1_CC2E = (1<<4)
- TIM3_CCER1_CC2P = (1<<5)
+ TIM3_CCER1_CC1E = (0)
+ TIM3_CCER1_CC1P = (1)
+ TIM3_CCER1_CC2E = (4)
+ TIM3_CCER1_CC2P = (5)
 ; TIM3_CCER2 fields
- TIM3_CCER2_CC3E = (1<<0)
- TIM3_CCER2_CC3P = (1<<1)
+ TIM3_CCER2_CC3E = (0)
+ TIM3_CCER2_CC3P = (1)
 
 ; Timer 4
  TIM4_CR1  = (0x5340)
@@ -793,21 +761,21 @@ B921600=9
 
 ; Timer 4 bitmasks
 
- TIM4_CR1_ARPE = (1 << 7)
- TIM4_CR1_OPM = (1 << 3)
- TIM4_CR1_URS = (1 << 2)
- TIM4_CR1_UDIS = (1 << 1)
- TIM4_CR1_CEN = (1 << 0)
+ TIM4_CR1_ARPE = (7)
+ TIM4_CR1_OPM = (3)
+ TIM4_CR1_URS = (2)
+ TIM4_CR1_UDIS = (1)
+ TIM4_CR1_CEN = (0)
 
- TIM4_IER_UIE = (1 << 0)
+ TIM4_IER_UIE = (0)
 
- TIM4_SR_UIF = (1 << 0)
+ TIM4_SR_UIF = (0)
 
- TIM4_EGR_UG = (1 << 0)
+ TIM4_EGR_UG = (0)
 
- TIM4_PSCR_PSC2 = (1 << 2)
- TIM4_PSCR_PSC1 = (1 << 1)
- TIM4_PSCR_PSC0 = (1 << 0)
+ TIM4_PSCR_PSC2 = (2)
+ TIM4_PSCR_PSC1 = (1)
+ TIM4_PSCR_PSC0 = (0)
 
  TIM4_PSCR_1 = 0
  TIM4_PSCR_2 = 1
@@ -859,29 +827,29 @@ B921600=9
 
 ; ADC bitmasks
 
- ADC_CSR_EOC = (1 << 7)
- ADC_CSR_AWD = (1 << 6)
- ADC_CSR_EOCIE = (1 << 5)
- ADC_CSR_AWDIE = (1 << 4)
- ADC_CSR_CH3 = (1 << 3)
- ADC_CSR_CH2 = (1 << 2)
- ADC_CSR_CH1 = (1 << 1)
- ADC_CSR_CH0 = (1 << 0)
+ ADC_CSR_EOC = (7)
+ ADC_CSR_AWD = (6)
+ ADC_CSR_EOCIE = (5)
+ ADC_CSR_AWDIE = (4)
+ ADC_CSR_CH3 = (3)
+ ADC_CSR_CH2 = (2)
+ ADC_CSR_CH1 = (1)
+ ADC_CSR_CH0 = (0)
 
- ADC_CR1_SPSEL2 = (1 << 6)
- ADC_CR1_SPSEL1 = (1 << 5)
- ADC_CR1_SPSEL0 = (1 << 4)
- ADC_CR1_CONT = (1 << 1)
- ADC_CR1_ADON = (1 << 0)
+ ADC_CR1_SPSEL2 = (6)
+ ADC_CR1_SPSEL1 = (5)
+ ADC_CR1_SPSEL0 = (4)
+ ADC_CR1_CONT = (1)
+ ADC_CR1_ADON = (0)
 
- ADC_CR2_EXTTRIG = (1 << 6)
- ADC_CR2_EXTSEL1 = (1 << 5)
- ADC_CR2_EXTSEL0 = (1 << 4)
- ADC_CR2_ALIGN = (1 << 3)
- ADC_CR2_SCAN = (1 << 1)
+ ADC_CR2_EXTTRIG = (6)
+ ADC_CR2_EXTSEL1 = (5)
+ ADC_CR2_EXTSEL0 = (4)
+ ADC_CR2_ALIGN = (3)
+ ADC_CR2_SCAN = (1)
 
- ADC_CR3_DBUF = (1 << 7)
- ADC_CR3_DRH = (1 << 6)
+ ADC_CR3_DBUF = (7)
+ ADC_CR3_DRH = (6)
 
 ; CPU
  CPU_A  = (0x7F00)
