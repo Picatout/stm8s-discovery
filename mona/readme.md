@@ -27,7 +27,7 @@ commandes:
   
   Personnellement je travaille sur un poste en Ubuntu et j'utilise **minicom** comme émulateur de terminal **VT100**.
   
-  [capteur écran MONA](capture_ecran_mona.png)
+  ![capture écran MONA](capture_ecran_mona.png)
   
   
 
