@@ -72,6 +72,13 @@
 		.endm
 
 ;--------------------------------------------------------
+;        OPTION BYTES
+;--------------------------------------------------------
+;		.area 	OPTION (ABS)
+;		.org 0x4800
+;		.byte 0,0,255,0,255,0,255,0,255,0,255
+		
+;--------------------------------------------------------
 ; ram uninitialized variables
 ;--------------------------------------------------------
 		TIB_SIZE = 80
@@ -88,8 +95,8 @@ idx_y:  .blkw 1; index for table pointed by y
 tib:	.blkb TIB_SIZE ; transaction input buffer
 pad:	.blkb PAD_SIZE ; working pad
 acc16:  .blkw 1; 16 bits accumulator
-ram_free_base:
-		;.area DATA
+ram_free_base: .blkw 1
+flash_free_base: .blkw 1
 		
 ;--------------------------------------------------------
 ; ram data
@@ -204,6 +211,19 @@ clear_ram0:
 	; initialize SP
 	ldw x,#0x7FE
 	ldw sp,x
+	; initialize free_ram_base 
+	ldw y,#ram_free_base
+	addw y,#0xf
+	ld a,yl
+	and a,#0xf0
+	ld yl,a
+	ldw ram_free_base,y
+	; initialize flash_free_base
+	ldw y,#flash_free
+	addw y,0xff
+	clr a
+	ld yl,a
+	ldw flash_free_base,y
 main:
 	_interrupts
 	ld a,#0xc
@@ -212,7 +232,7 @@ main:
 	call uart_print
 	ldw y,#RAM_FREE_MSG
 	call uart_print
-	ldw y,#ram_free_base
+	ldw y,ram_free_base
 	ld a,#16
 	call itoa
 	call uart_print
@@ -221,7 +241,7 @@ main:
 	ldw y,#FLASH_FREE_MSG
 	call uart_print
 	ld a,#16
-	ldw y,#flash_free_base
+	ldw y,flash_free_base
 	call itoa
 	call uart_print
 	ldw y,#EEPROM_MSG
@@ -762,12 +782,52 @@ write_byte:
     cpw y,#FLASH_BASE
     jrpl write_flash
     cpw y,#EEPROM_BASE
-    jrpl write_eeprom
-    ld (y),a
+	jrmi 1$
+	cpw y,#OPTION_END+1  
+    jrmi write_eeprom
+1$: ld (y),a
 	ret
+	; write program memory
 write_flash:
+	mov FLASH_PUKR,#FLASH_PUKR_KEY1
+	mov FLASH_PUKR,#FLASH_PUKR_KEY2
+	btjf FLASH_IAPSR,#FLASH_IAPSR_PUL,.
+1$:	_no_interrupts
+	ld (y),a
+	btjf FLASH_IAPSR,#FLASH_IAPSR_EOP,.
+    _interrupts
+    bres FLASH_IAPSR,#FLASH_IAPSR_PUL
     ret
+    ; write eeprom and option
 write_eeprom:
+	OPT=2
+	BYTE=1
+	LOCAL_SIZE=2
+	push #0
+	push a
+	; check for data eeprom or option eeprom
+	cpw y,#OPTION_BASE
+	jrmi 1$
+	cpw y,#OPTION_END+1
+	jrpl 1$
+	cpl (OPT,sp)
+1$: mov FLASH_DUKR,#FLASH_DUKR_KEY1
+    mov FLASH_DUKR,#FLASH_DUKR_KEY2
+    ld a,(OPT,sp)
+    jreq 2$
+    bset FLASH_CR2,#FLASH_CR2_OPT
+    bres FLASH_NCR2,#FLASH_CR2_OPT 
+2$: btjf FLASH_IAPSR,#FLASH_IAPSR_DUL,.
+    ld a,(BYTE,sp)
+    ld (y),a
+    incw y
+    ld a,(OPT,sp)
+    jreq 3$
+    ld a,(BYTE,sp)
+    cpl a
+    ld (y),a
+3$: btjf FLASH_IAPSR,#FLASH_IAPSR_EOP,.
+	addw sp,#LOCAL_SIZE
     ret
         
 		  
@@ -964,6 +1024,6 @@ RAM_LAST_FREE_MSG: .asciz "- $6FF\n"
 FLASH_FREE_MSG: .asciz "free flash: "
 EEPROM_MSG: .asciz " - $FFFF\neeprom: $4000 - $43ff\noption: $4800 - $487f\nSFR: $5000 - $57FF\nboot ROM: $6000 - $67FF\n"
 BAD_CMD:    .asciz " is not a command\n"	
-
-flash_free_base:
+WRITE_FAILED: .asciz "write failed\n"
+flash_free:
 	
