@@ -7,4 +7,4 @@
 *.rst
 STM8S_128kEval_Flash
 STM8S_128kEval_microSD
-*/build/
+*/build

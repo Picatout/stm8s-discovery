@@ -81,11 +81,12 @@
 ;--------------------------------------------------------
 ; ram uninitialized variables
 ;--------------------------------------------------------
+		STACK_BASE = 0x700
 		TIB_SIZE = 80
 		PAD_SIZE = 80
         .area DATA
-ticks:	.blkw 1 ; millisecond system ticks
-cntdwn:	.blkw 1 ; millisecond count down timer
+;ticks  .blkw 1 ; system ticks at every millisecond        
+;cntdwn:	.blkw 1 ; millisecond count down timer
 rx_char: .blkb 1 ; last uart received char
 in.w:     .blkb 1 ; when 16 bits is required for indexing i.e. ld a,([in.w],y) 
 in:		.blkb 1; parser position in tib
@@ -133,7 +134,7 @@ __interrupt_vect:
 	int NonHandledInterrupt ;int20
 	int uart_rx_isr         ;int21
 	int NonHandledInterrupt ;int22
-	int timer4_isr			;int23
+	int NonHandledInterrupt	;int23
 	int NonHandledInterrupt ;int24
 	int NonHandledInterrupt ;int25
 	int NonHandledInterrupt ;int26
@@ -153,18 +154,18 @@ clock_init:
 	ret
 
 		; initialize TIMER4 ticks counter
-timer4_init:
-	clr ticks
-	clr cntdwn
-	ld a,#TIM4_PSCR_128 
-	ld TIM4_PSCR,a
-	bset TIM4_IER,#TIM4_IER_UIE
-	bres TIM4_SR,#TIM4_SR_UIF
-	ld a,#125
-	ld TIM4_ARR,a ; 1 msec interval
-	ld a,#((1<<TIM4_CR1_CEN)+(1<<TIM4_CR1_ARPE)) 
-	ld TIM4_CR1,a
-	ret
+;timer4_init:
+;	clr ticks
+;	clr cntdwn
+;	ld a,#TIM4_PSCR_128 
+;	ld TIM4_PSCR,a
+;	bset TIM4_IER,#TIM4_IER_UIE
+;	bres TIM4_SR,#TIM4_SR_UIF
+;	ld a,#125
+;	ld TIM4_ARR,a ; 1 msec interval
+;	ld a,#((1<<TIM4_CR1_CEN)+(1<<TIM4_CR1_ARPE)) 
+;	ld TIM4_CR1,a
+;	ret
 
 	; initialize UART2, 115200 8N1
 uart2_init:
@@ -182,30 +183,30 @@ uart2_init:
 	; pause in milliseconds
     ; input:  y delay
     ; output: none
-pause:
-	ldw cntdwn,y
-1$:	ldw y,cntdwn
-	jrne 1$
-    ret
+;pause:
+;	ldw cntdwn,y
+;1$:	ldw y,cntdwn
+;	jrne 1$
+;    ret
     
 init0:
 	_no_interrupts
 	call clock_init
-	clr ticks
-	clr cntdwn
+;	clr ticks
+;	clr cntdwn
 	ld a,#255
 	ld rx_char,a
-	call timer4_init
+;	call timer4_init
 	call uart2_init
 	_ledenable
 	_ledoff
 	clr in.w ; must always be 0
 	; clear stack
-	ldw x,#0x700
+	ldw x,#STACK_BASE
 clear_ram0:
 	clr (x)
 	incw x
-	cpw x,#0x7FF	
+	cpw x,#STACK_BASE-1	
 	jrule clear_ram0
 
 	; initialize SP
@@ -220,7 +221,7 @@ clear_ram0:
 	ldw ram_free_base,y
 	; initialize flash_free_base
 	ldw y,#flash_free
-	addw y,0xff
+	addw y,#0xff
 	clr a
 	ld yl,a
 	ldw flash_free_base,y
@@ -265,16 +266,16 @@ NonHandledInterrupt:
 	iret
 
 	; TIMER4 interrupt service
-timer4_isr:
-	ldw y,ticks
-	incw y
-	ldw ticks,y
-	ldw y,cntdwn
-	jreq 1$
-	decw y
-	ldw cntdwn,y
-1$: bres TIM4_SR,#TIM4_SR_UIF
-	iret
+;timer4_isr:
+;	ldw y,ticks
+;	incw y
+;	ldw ticks,y
+;	ldw y,cntdwn
+;	jreq 1$
+;	decw y
+;	ldw cntdwn,y
+;1$: bres TIM4_SR,#TIM4_SR_UIF
+;	iret
 
 	; uart2 receive interrupt service
 uart_rx_isr:
@@ -758,7 +759,7 @@ peek:
     ld yh,a
     pop a
     call itoa
-   call uart_print
+    call uart_print
     popw y
     ret	
 	
@@ -766,7 +767,7 @@ peek:
 	;  input:
 	;	  none
 	;  output:
-	;    y   uint16_t address
+	;    y   uint16_t 
 number:
 	call next_word
 	call atoi
@@ -785,11 +786,28 @@ write_byte:
 	jrmi 1$
 	cpw y,#OPTION_END+1  
     jrmi write_eeprom
-1$: ld (y),a
+1$: cpw y,ram_free_base
+    jrpl 2$
+    ret
+2$: cpw y,#STACK_BASE
+    jrmi 3$
+    jp write_sfr    
+3$: ld (y),a
 	ret
+	; write SFR
+write_sfr:
+	cpw y,#SFR_BASE
+	jrmi 2$
+	cpw y,#SFR_END+1
+	jrpl 2$
+	ld (y),a
+2$:	ret
 	; write program memory
 write_flash:
-	mov FLASH_PUKR,#FLASH_PUKR_KEY1
+	cpw y,flash_free_base
+	jrpl 0$
+	ret
+0$:	mov FLASH_PUKR,#FLASH_PUKR_KEY1
 	mov FLASH_PUKR,#FLASH_PUKR_KEY2
 	btjf FLASH_IAPSR,#FLASH_IAPSR_PUL,.
 1$:	_no_interrupts
@@ -835,6 +853,8 @@ write_eeprom:
 	; list of commands
 	;   @  addr display content at address
 	;   !  addr byte [byte ]* store bytes at address
+	;   ?  diplay command help
+	;   b  n    convert n in the other base
 	;	c  addr bitmask  clear  bits at address
 	;   h  addr hex dump memory starting at address
 	;   m  src dest count,  move memory block
@@ -853,8 +873,16 @@ eval:
 	jrne 1$
 	jp fetch
 1$:	cp a,#'!
-	jrne 2$
+	jrne 10$
 	jp store
+10$:
+	cp a,#'?
+	jrne 15$
+	jp help
+15$: 
+	cp a,#'b
+    jrne 2$
+    jp base_convert	
 2$:	cp a,#'c
 	jrne 3$
 	jp clear_bits
@@ -914,7 +942,25 @@ store:
 	jra 1$
 2$:	popw y
 	ret
-	
+	; ? , display command information
+help:
+	ldw y, #HELP
+	call uart_print
+	ret
+	; convert from one numeric base to the other
+	;  b n|$n
+base_convert:
+    call number
+    ld a,pad
+    cp a,#'$
+    jrne 1$
+    ld a,#10
+    jra 2$
+1$: ld a,#16
+2$: call itoa
+    call uart_print
+    ret
+        	
 	; clear bitmask, c addr mask
 clear_bits:
 	call number
@@ -937,6 +983,7 @@ hexdump:
 	call number
     ldw (MADDR,sp),y ; save address
 row_init:
+	ldw x,#pad
 	ld a,#16
 	call itoa
 	call uart_print
@@ -948,10 +995,27 @@ row:
 	ld a,#16
 	ldw y,(MADDR,sp)
 	call peek
+	ld a,(y)
+	cp a,#SPACE
+	jrpl 1$
+	ld a,#SPACE
+1$:	cp a,#128
+    jrmi 2$
+    ld a,#SPACE
+2$: ld (x),a
+	incw x
 	incw y
 	ldw (MADDR,sp),y
 	dec (CNTR,sp)
 	jrne row
+	ld a,#SPACE
+	call uart_tx
+	clr a
+	ld (x),a
+	pushw y
+	ldw y,#pad
+	call uart_print
+	popw y
 	ld a,#NL
 	call uart_tx
 	call uart_getchar
@@ -1022,8 +1086,23 @@ VERSION:	.asciz "MONA VERSION 0.1\n     memory map\n-------------------\n"
 RAM_FREE_MSG: .asciz "ram free: "
 RAM_LAST_FREE_MSG: .asciz "- $6FF\n"
 FLASH_FREE_MSG: .asciz "free flash: "
-EEPROM_MSG: .asciz " - $FFFF\neeprom: $4000 - $43ff\noption: $4800 - $487f\nSFR: $5000 - $57FF\nboot ROM: $6000 - $67FF\n"
+EEPROM_MSG: .ascii " - $FFFF\n"
+            .ascii "eeprom: $4000 - $43ff\n"
+            .ascii "option: $4800 - $487f\n"
+            .ascii "SFR: $5000 - $57FF\n"
+            .asciz "boot ROM: $6000 - $67FF\n"
 BAD_CMD:    .asciz " is not a command\n"	
-WRITE_FAILED: .asciz "write failed\n"
+HELP: .ascii "commands:\n"
+	  .ascii "@ addr, display content at address\n"
+	  .ascii "! addr byte [byte ]*, store bytes at addr++\n"
+	  .ascii "?, diplay command help\n"
+	  .ascii "b n|$n, convert n in the other base\n"
+	  .ascii "c addr bitmask, clear bits at address\n"
+	  .ascii "h addr, hex dump memory starting at address\n"
+	  .ascii "m src dest count, move memory block\n"
+	  .ascii "s addr bitmask, set bits at address\n"
+	  .ascii "t addr bitmask, toggle bits at address\n"
+	  .asciz "x addr, execute  code at address\n"
+
 flash_free:
 	

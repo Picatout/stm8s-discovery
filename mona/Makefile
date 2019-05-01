@@ -56,7 +56,6 @@ clean:
 	@echo "***************"
 	@echo "cleaning files"
 	@echo "***************"
-	rm -f $(OBJECTS) $(SYMBOLS) $(ASMS) $(LISTS) $(RSTS)
-	rm -f $(TARGET) $(MAP) $(LK) $(CDB)
+	rm -f $(BUILD)*
 
 .PHONY: all clean flash
