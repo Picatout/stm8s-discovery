@@ -19,6 +19,16 @@ commandes:
 * t addr bitmask, inverse la valeur des bits masqués.
 * x addr, exécute le code à l'adresse donnée. i.e. x $6000 réinialise la carte. 
 
+ utilisation
+ -----------
  
+  Le UART2 du STM8S-DISCOVERY est branché sur les broches **TX -> PD5** et **RX -> PD6**. Il suffit de relié ces 2 broches à un adapteur de niveaux 
+  pour port sériel qui est relié à un PC. MONA communique à la vitesse de **115200 BAUD** configuré en **8N1** pas de contrôle de flux.
+  
+  Personnellement je travaille sur un poste en Ubuntu et j'utilise **minicom** comme émulateur de terminal **VT100**.
+  
+  [capteur écran MONA](capture_ecran_mona.png)
+  
+  
 
 
