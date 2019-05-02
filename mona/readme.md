@@ -3,8 +3,8 @@ MONA
 Moniteur écris en assembleur
 
 Ce moniteur peut-être utile pour interragir directement avec le microcontrôleur en observant l'effet produit par la modification des registres de 
-contrôle des périphérique. Par exemple pour allumer la LED vers sur la carte la commande **c $500f 1** peut-être utilisée. **$500f** est l'adresse du registre
-**PD_ODR**  et le LED est branché sur PD0. 
+contrôle des périphériques. Par exemple pour allumer la LED vers sur la carte la commande **c $500f 1** peut-être utilisée. **$500f** est l'adresse du registre
+**PD_ODR**  et le LED est branché sur PD0 d'où le masque **1** pour masquer le bit 0 du registre. 
   
 commandes:
 ----------
@@ -22,13 +22,14 @@ commandes:
  utilisation
  -----------
  
-  Le UART2 du STM8S-DISCOVERY est branché sur les broches **TX -> PD5** et **RX -> PD6**. Il suffit de relié ces 2 broches à un adapteur de niveaux 
-  pour port sériel qui est relié à un PC. MONA communique à la vitesse de **115200 BAUD** configuré en **8N1** pas de contrôle de flux.
+  Le UART2 du STM8S-DISCOVERY est branché sur les broches **TX -> PD5 -> CN4-10** et **RX -> PD6 -> CN4-11**. Il suffit de relier ces 2 broches à un 
+  adapteur de niveaux pour port sériel qui est relié à un PC. MONA communique à la vitesse de **115200 BAUD** configuré en **8N1** pas de contrôle de flux.
   
-  Personnellement je travaille sur un poste en Ubuntu et j'utilise **minicom** comme émulateur de terminal **VT100**.
+  Personnellement je travaille sur un poste en Ubuntu 18.04 et j'utilise **minicom** comme émulateur de terminal **VT100**.
   
   ![capture écran MONA](capture_ecran_mona.png)
   
+  Le monniteur bloque l'écriture dans la mémoire flash occupée par le moniteur ainsi que la mémoire ram utilisée par celui-ci.
   
 
 
