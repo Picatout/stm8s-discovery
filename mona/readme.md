@@ -3,8 +3,10 @@ MONA
 Moniteur écris en assembleur
 
 Ce moniteur peut-être utile pour interragir directement avec le microcontrôleur en observant l'effet produit par la modification des registres de 
-contrôle des périphériques. Par exemple pour allumer la LED vers sur la carte la commande **c $500f 1** peut-être utilisée. **$500f** est l'adresse du registre
+contrôle des périphériques. Par exemple pour allumer la LED verte sur la carte, la commande **c $500f 1** peut-être utilisée. **$500f** est l'adresse du registre
 **PD_ODR**  et le LED est branché sur PD0 d'où le masque **1** pour masquer le bit 0 du registre. 
+
+la commande **t $500f 1** inverse l'état de la LED.
   
 commandes:
 ----------
@@ -31,5 +33,9 @@ commandes:
   
   Le monniteur bloque l'écriture dans la mémoire flash occupée par le moniteur ainsi que la mémoire ram utilisée par celui-ci.
   
-
+  lors de la saisie d'une commande la combinaison de touches **CTRL-R** permet de répéter la dernière commande. Mais ça ne fonctionne qui si on
+  l'utilise au début de la saisie. Par exemple si après avoir exécuter une fois la commande **t $500f 1** on fait des **CTRL-R** suivie de **ENTER**
+  on peut basculer l'état de la LED verte rapidement.
+  
+  
 
