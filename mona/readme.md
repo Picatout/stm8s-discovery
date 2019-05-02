@@ -4,7 +4,7 @@ Moniteur écris en assembleur
 
 Ce moniteur peut-être utile pour interragir directement avec le microcontrôleur en observant l'effet produit par la modification des registres de 
 contrôle des périphériques. Par exemple pour allumer la LED verte sur la carte, la commande **c $500f 1** peut-être utilisée. **$500f** est l'adresse du registre
-**PD_ODR**  et le LED est branché sur PD0 d'où le masque **1** pour masquer le bit 0 du registre. 
+**PD_ODR**  et la LED est branchée sur **PD0** d'où le masque **1** pour masquer le bit 0 du registre. 
 
 la commande **t $500f 1** inverse l'état de la LED.
   
@@ -27,7 +27,8 @@ commandes:
   Le UART2 du STM8S-DISCOVERY est branché sur les broches **TX -> PD5 -> CN4-10** et **RX -> PD6 -> CN4-11**. Il suffit de relier ces 2 broches à un 
   adapteur de niveaux pour port sériel qui est relié à un PC. MONA communique à la vitesse de **115200 BAUD** configuré en **8N1** pas de contrôle de flux.
   
-  Personnellement je travaille sur un poste en Ubuntu 18.04 et j'utilise **minicom** comme émulateur de terminal **VT100**.
+  Personnellement je travaille sur un poste en Ubuntu 18.04 et j'utilise **minicom** comme émulateur de terminal **VT100**. Minicom doit-être configuré 
+  pour que lorsuqu'il reçoit un caractère **'\n'** *(newline)* et exécute aussi un **'\r'** *(return)* . 
   
   ![capture écran MONA](capture_ecran_mona.png)
   
