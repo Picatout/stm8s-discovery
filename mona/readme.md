@@ -32,7 +32,7 @@ commandes:
   
   ![capture écran MONA](capture_ecran_mona.png)
   
-  Le monniteur bloque l'écriture dans la mémoire flash occupée par le moniteur ainsi que la mémoire ram utilisée par celui-ci.
+  Le moniteur bloque l'écriture dans la mémoire flash occupée par le moniteur ainsi que la mémoire ram utilisée par celui-ci.
   
   lors de la saisie d'une commande la combinaison de touches **CTRL-R** permet de répéter la dernière commande. Mais ça ne fonctionne qui si on
   l'utilise au début de la saisie. Par exemple si après avoir exécuter une fois la commande **t $500f 1** on fait des **CTRL-R** suivie de **ENTER**
